@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Background -->
+  <rect width="32" height="32" rx="8" fill="#1A2E2A"/>
+  <!-- Circle outline -->
+  <circle cx="16" cy="16" r="12.5" fill="none" stroke="#0F6E56" stroke-width="2"/>
+  <!-- Monogram P -->
+  <text
+    x="16" y="21"
+    font-family="Manrope, 'Segoe UI', system-ui, sans-serif"
+    font-size="15"
+    font-weight="700"
+    fill="#0F6E56"
+    text-anchor="middle"
+  >P</text>
+</svg>

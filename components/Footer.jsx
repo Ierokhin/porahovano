@@ -61,12 +61,12 @@ export default function Footer() {
             <p style={{ fontSize: 13, color: "rgba(255,255,255,.55)", lineHeight: 1.7, maxWidth: 220, marginBottom: 20 }}>
               Порівнюємо інвестиційні інструменти для накопичення капіталу. Реальна дохідність після 19.5% податку.
             </p>
-            <a href="https://t.me/porakhovano" target="_blank" rel="noopener noreferrer"
+            <a href="https://t.me/porahovano" target="_blank" rel="noopener noreferrer"
               style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 600, color: G, textDecoration: "none", background: "rgba(15,110,86,.15)", padding: "6px 12px", borderRadius: 20, border: "1px solid rgba(15,110,86,.3)" }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M21.8 2.2L1 9.5c-1.4.5-1.4 1.3-.2 1.7l5.1 1.6 1.9 5.9c.2.7.4.9 1 .9.5 0 .7-.2 1-.5l2.4-2.3 5 3.7c.9.5 1.6.3 1.8-.9l3.3-15.2c.3-1.4-.5-2-1.5-1.7z" fill={G}/>
               </svg>
-              @porakhovano
+              @porahovano
             </a>
           </div>
 

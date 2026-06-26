@@ -22,9 +22,9 @@ const INSTRUMENTS = [
   { icon:"📜", name:"ОВДП",         sub:"UAH / EUR · Держава",     rate:"16%",  rateLbl:"топ ставка · UAH", risk:"low",  badge:"⚡ лише 1.5% податку",  href:"/ovdp" },
   { icon:"🏛", name:"НПФ",          sub:"UAH · пенсійні фонди",    rate:"11%",  rateLbl:"середня дохідність",risk:"mid", badge:"+18% ПДФО повертається", href:"/npf" },
   { icon:"📈", name:"ETF",          sub:"EUR · IBKR / Freedom24",  rate:"9.5%", rateLbl:"S&P 500 · довгострокове",risk:"mid",badge:null,               href:"/etf" },
-  { icon:"🏨", name:"Нерухомість",  sub:"UAH · готелі та апарти",  rate:"14%",  rateLbl:"готель під управлінням",risk:"mid",badge:null,                href:"/nerukhomist" },
-  { icon:"🥇", name:"Золото",       sub:"EUR · ETF / фізичне",     rate:"7%",   rateLbl:"Gold ETF · IGLN",  risk:"low",  badge:null,                    href:"/zoloto" },
-  { icon:"⛓", name:"Блокчейн",     sub:"EUR · крипто / стейблкоїни",rate:"15%",rateLbl:"Bitcoin · волатильний",risk:"high",badge:null,                href:"/blockchain" },
+  { icon:"🏨", name:"Нерухомість",  sub:"UAH · готелі та апарти",  rate:"14%",  rateLbl:"готель під управлінням",risk:"mid",badge:null,                href:"/alternatyvni" },
+  { icon:"🥇", name:"Золото",       sub:"EUR · ETF / фізичне",     rate:"7%",   rateLbl:"Gold ETF · IGLN",  risk:"low",  badge:null,                    href:"/alternatyvni" },
+  { icon:"⛓", name:"Блокчейн",     sub:"EUR · крипто / стейблкоїни",rate:"15%",rateLbl:"Bitcoin · волатильний",risk:"high",badge:null,                href:"/alternatyvni" },
 ];
 
 const RISK_STYLE = {
@@ -66,8 +66,8 @@ export default function HomePage() {
             <Link href="/kalkulator" style={{ padding:"12px 22px", background:G, color:"white", borderRadius:10, fontSize:14, fontWeight:700, textDecoration:"none" }}>
               Зібрати портфель →
             </Link>
-            <Link href="/porivniannia" style={{ padding:"12px 22px", border:`1.5px solid ${B}`, color:D, borderRadius:10, fontSize:14, fontWeight:600, textDecoration:"none", background:"white" }}>
-              Порівняти всі
+            <Link href="/alternatyvni" style={{ padding:"12px 22px", border:`1.5px solid ${B}`, color:D, borderRadius:10, fontSize:14, fontWeight:600, textDecoration:"none", background:"white" }}>
+              Альтернативні
             </Link>
           </div>
         </div>
@@ -134,10 +134,10 @@ export default function HomePage() {
         })}
 
         {/* Compare card */}
-        <Link href="/porivniannia" style={{ border:`1.5px dashed ${B}`, borderRadius:14, padding:18, background:S, textDecoration:"none", color:GR, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", textAlign:"center" }}>
+        <Link href="/alternatyvni" style={{ border:`1.5px dashed ${B}`, borderRadius:14, padding:18, background:S, textDecoration:"none", color:GR, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", textAlign:"center" }}>
           <div style={{ fontSize:22, marginBottom:8 }}>⚖️</div>
-          <div style={{ fontSize:13, fontWeight:700, color:D, marginBottom:4 }}>Порівняти все</div>
-          <div style={{ fontSize:11, color:"#aaa" }}>Зведена таблиця →</div>
+          <div style={{ fontSize:13, fontWeight:700, color:D, marginBottom:4 }}>Альтернативні</div>
+          <div style={{ fontSize:11, color:"#aaa" }}>Крипто, метали, нерухомість →</div>
         </Link>
       </div>
 

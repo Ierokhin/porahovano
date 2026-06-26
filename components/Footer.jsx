@@ -20,7 +20,6 @@ const COLS = [
   {
     title: "Сервіси",
     links: [
-      { href: "/porivniannia", label: "Порівняти все" },
       { href: "/kalkulator",   label: "Мій капітал" },
       { href: "/novyny",       label: "Новини" },
     ],

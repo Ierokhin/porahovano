@@ -1,0 +1,55 @@
+{
+  "updated": "2026-06-27",
+  "depozyty": {
+    "uah": [
+      { "id": "privatbank",    "rank": 1,  "name": "ПриватБанк",      "type": "state",   "rate_12m": 12,   "min": 100,    "online": true,  "url": "https://privatbank.ua" },
+      { "id": "oschadbank",    "rank": 2,  "name": "Ощадбанк",        "type": "state",   "rate_12m": 10,   "min": 500,    "online": true,  "url": "https://oschadbank.ua" },
+      { "id": "ukreximbank",   "rank": 3,  "name": "Укрексімбанк",    "type": "state",   "rate_12m": null, "min": 1000,   "online": false, "url": "https://eximb.com" },
+      { "id": "pumb",          "rank": 4,  "name": "ПУМБ",            "type": "private", "rate_12m": 15,   "min": 1000,   "online": true,  "url": "https://pumb.ua" },
+      { "id": "raiffeisen",    "rank": 5,  "name": "Райффайзен Банк", "type": "foreign", "rate_12m": 14,   "min": 1000,   "online": true,  "url": "https://raiffeisen.ua" },
+      { "id": "ukrsibbank",    "rank": 6,  "name": "Укрсиббанк",      "type": "foreign", "rate_12m": null, "min": 1000,   "online": true,  "url": "https://ukrsibbank.com" },
+      { "id": "sensbank",      "rank": 7,  "name": "Сенс Банк",       "type": "foreign", "rate_12m": null, "min": 1000,   "online": true,  "url": "https://sensbank.com.ua" },
+      { "id": "ukrgazbank",    "rank": 8,  "name": "Укргазбанк",      "type": "state",   "rate_12m": null, "min": 500,    "online": true,  "url": "https://ukrgasbank.com" },
+      { "id": "otpbank",       "rank": 9,  "name": "OTP Bank",        "type": "foreign", "rate_12m": null, "min": 1000,   "online": true,  "url": "https://otpbank.com.ua" },
+      { "id": "kredobank",     "rank": 10, "name": "Кредобанк",       "type": "foreign", "rate_12m": null, "min": 1000,   "online": true,  "url": "https://kredobank.com.ua" },
+      { "id": "monobank",      "rank": 11, "name": "Monobank",        "type": "private", "rate_12m": 13,   "min": 1,      "online": true,  "url": "https://monobank.ua" },
+      { "id": "taskombak",     "rank": 12, "name": "Таскомбанк",      "type": "private", "rate_12m": 16,   "min": 500,    "online": true,  "url": "https://tascombank.ua" },
+      { "id": "abank",         "rank": 13, "name": "А-Банк",          "type": "private", "rate_12m": null, "min": 1000,   "online": true,  "url": "https://abank.com.ua" },
+      { "id": "globusbank",    "rank": 14, "name": "Глобус Банк",     "type": "private", "rate_12m": null, "min": 1000,   "online": true,  "url": "https://globusbank.com.ua" },
+      { "id": "yunexbank",     "rank": 15, "name": "Юнекс Банк",      "type": "private", "rate_12m": 17,   "min": 5000,   "online": true,  "url": "https://yunexbank.com.ua" },
+      { "id": "acordbank",     "rank": 16, "name": "Акордбанк",       "type": "private", "rate_12m": 16.5, "min": 10000,  "online": true,  "url": "https://acordbank.com.ua" },
+      { "id": "kreditdnipro",  "rank": 17, "name": "Банк Кредит Дніпро","type":"private","rate_12m": null, "min": 1000,   "online": true,  "url": "https://creditdnepr.com.ua" },
+      { "id": "ideabank",      "rank": 18, "name": "Ідея Банк",       "type": "private", "rate_12m": null, "min": 1000,   "online": true,  "url": "https://ideabank.ua" }
+    ],
+    "eur": [
+      { "id": "privatbank",    "rank": 1,  "name": "ПриватБанк",      "type": "state",   "rate_12m": 0.5,  "min": 100,    "online": true,  "url": "https://privatbank.ua" },
+      { "id": "oschadbank",    "rank": 2,  "name": "Ощадбанк",        "type": "state",   "rate_12m": null, "min": 100,    "online": false, "url": "https://oschadbank.ua" },
+      { "id": "pumb",          "rank": 3,  "name": "ПУМБ",            "type": "private", "rate_12m": 2,    "min": 500,    "online": true,  "url": "https://pumb.ua" },
+      { "id": "raiffeisen",    "rank": 4,  "name": "Райффайзен Банк", "type": "foreign", "rate_12m": 1.5,  "min": 500,    "online": true,  "url": "https://raiffeisen.ua" },
+      { "id": "monobank",      "rank": 5,  "name": "Monobank",        "type": "private", "rate_12m": 1,    "min": 100,    "online": true,  "url": "https://monobank.ua" }
+    ]
+  },
+  "ovdp": {
+    "uah": [
+      { "term": "12 міс.", "rate": 16 },
+      { "term": "6 міс.",  "rate": 15 },
+      { "term": "3 міс.",  "rate": 13 }
+    ],
+    "eur": [
+      { "term": "12 міс.", "rate": 5 },
+      { "term": "6 міс.",  "rate": 4 }
+    ]
+  },
+  "npf": [
+    { "id": "otp",      "name": "OTP Pension", "rate": 11 },
+    { "id": "nnpf",     "name": "ННПФ",        "rate": 10 },
+    { "id": "dynasty",  "name": "Династія",    "rate": 9  }
+  ],
+  "etf": [
+    { "id": "e1",  "ticker": "CSPX",  "name": "iShares Core S&P 500",       "rate": 9.5,  "sector": "index"   },
+    { "id": "e7",  "ticker": "NATO",  "name": "VanEck Defense UCITS ETF",   "rate": 20.0, "sector": "defense" },
+    { "id": "e5",  "ticker": "IITU",  "name": "iShares S&P 500 IT Sector",  "rate": 15.0, "sector": "tech"    },
+    { "id": "e4",  "ticker": "CNDX",  "name": "iShares NASDAQ 100",         "rate": 13.0, "sector": "index"   },
+    { "id": "e2",  "ticker": "VWCE",  "name": "Vanguard FTSE All-World",    "rate": 8.5,  "sector": "index"   }
+  ]
+}

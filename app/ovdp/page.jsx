@@ -52,7 +52,7 @@ export default function OvdpPage() {
   useEffect(() => { fetch("/data/rates.json").then(r=>r.json()).then(setRates).catch(()=>setRates(null)); }, []);
 
   const tax  = rates?.ovdp?.tax ?? 0.015;
-  const rows = rates?.ovdp?.[cur] ?? [];
+  const rows = (rates?.ovdp?.[cur] ?? []).filter(r => r.months === 12);
   const topRate = rows[0]?.rate ?? null;
   const S = cur === "uah" ? "₴" : "€";
   const net = (r) => +(r * (1 - tax)).toFixed(2);

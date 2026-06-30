@@ -113,6 +113,8 @@ function MetalsSection() {
   );
 }
 
+export default function AlternatyvniPage() {
+
 
   const [mainTab,    setMainTab]    = useState("crypto");
   const [cryptoTab,  setCryptoTab]  = useState("coins");

@@ -123,7 +123,7 @@ export default function OvdpPage() {
                   Нараховано: <strong>{depoRate}%</strong><br/>
                   <span style={{color:"#C0392B"}}>Податок {depoTax*100}%: −{(depoRate*depoTax).toFixed(1)}%</span>
                 </div>
-                <div style={{fontWeight:700,fontSize:16,marginTop:4}}>На руки: <span style={{color:"#C0392B"}}>{net(depoRate*(1-depoTax)/(1-depoTax)).toFixed(0)}%</span></div>
+                <div style={{fontWeight:700,fontSize:16,marginTop:4}}>На руки: <span style={{color:"#C0392B"}}>{(depoRate*(1-depoTax)).toFixed(1)}%</span></div>
               </div>
               <div style={{background:T.greenLt,borderRadius:10,padding:"14px 18px",border:`1.5px solid ${T.green}`}}>
                 <div style={{fontSize:12,color:T.gray,marginBottom:6}}>ОВДП UAH · {topRate}%</div>

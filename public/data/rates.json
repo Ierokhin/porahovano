@@ -46,7 +46,7 @@
     "pdfo_refund": 0.18,
     "funds": [
       { "id": "dynasty",    "name": "Династія",       "rate": 15.61, "license": "НКЦПФР", "url": "https://dynasty.icu" },
-      { "id": "otp",        "name": "ОТП Пенсія",     "rate": 14.74, "license": "НКЦПФР", "url": "https://www.otppension.com.ua" },
+      { "id": "otp",        "name": "ОТП Пенсія",     "rate": 14.74, "license": "НКЦПФР", "url": "https://www.otpcapital.com.ua/pension-funds_2/fund-otp-pension/" },
       { "id": "privatfond", "name": "ПриватФонд",     "rate": 14.63, "license": "НКЦПФР", "url": "https://privatfond.com.ua" },
       { "id": "emerit",     "name": "Емерит-Україна", "rate": 14.3,  "license": "НКЦПФР", "url": "https://upinvest.ua/funds/emerit" }
     ]

@@ -86,7 +86,7 @@ export default function DepozytyPage() {
     setTimeout(() => setToast(null), 4000);
   }
 
-  const col = "28px 42px 1fr 72px 100px 95px 64px 68px 108px";
+  const col = "28px 42px 1fr 72px 100px 95px 68px 108px";
 
   return (
     <main style={{ fontFamily:"'Manrope','Segoe UI',system-ui,sans-serif", color:T.dark, maxWidth:980, margin:"0 auto", padding:"0 20px 60px" }}>
@@ -163,7 +163,7 @@ export default function DepozytyPage() {
       {/* Table */}
       <div style={{ border:`1.5px solid ${T.border}`, borderRadius:14, overflow:"hidden", marginBottom:10 }}>
         <div style={{ display:"grid", gridTemplateColumns:col, padding:"8px 14px", background:T.grayLt, fontSize:10, fontWeight:700, color:T.gray, letterSpacing:".04em", alignItems:"center", gap:4 }}>
-          {["#НБУ","ТИП","БАНК","12 МІС.","ПІСЛЯ ПДТ","МІН. СУМА","ОНЛАЙН","ФГВФО","МІЙ КАПІТАЛ"].map(h => <div key={h}>{h}</div>)}
+          {["#НБУ","ТИП","БАНК","12 МІС.","ПІСЛЯ ПДТ","МІН. СУМА","ФГВФО","МІЙ КАПІТАЛ"].map(h => <div key={h}>{h}</div>)}
         </div>
 
         {!rates && <div style={{ padding:24, textAlign:"center", color:T.gray, fontSize:13 }}>⏳ Завантажуємо дані...</div>}
@@ -174,12 +174,17 @@ export default function DepozytyPage() {
           const tp     = TYPE[bank.type];
           const isDone = !!added[bank.id];
           return (
-            <div key={bank.id} style={{ display:"grid", gridTemplateColumns:col, padding:"11px 14px", alignItems:"center", gap:4, borderTop:`1px solid ${T.border}`, background:isTop?T.greenLt:T.white, opacity:empty?0.5:1 }}>
+            <a key={bank.id} href={bank.url} target="_blank" rel="nofollow noopener" style={{
+              display:"grid", gridTemplateColumns:col, padding:"11px 14px", alignItems:"center", gap:4,
+              borderTop:`1px solid ${T.border}`, background:isTop?T.greenLt:T.white, opacity:empty?0.5:1,
+              textDecoration:"none", color:"inherit", cursor:"pointer",
+            }}>
               <div style={{ fontSize:11, fontWeight:700, color:"#bbb" }}>{bank.rank}</div>
               <div><span style={{ fontSize:9, fontWeight:700, padding:"2px 5px", borderRadius:4, background:tp.bg, color:tp.c }}>{tp.label}</span></div>
               <div style={{ fontWeight:700, fontSize:13, display:"flex", alignItems:"center", gap:5, flexWrap:"wrap" }}>
                 {bank.name}
                 {isTop && <span style={{ fontSize:9, background:T.green, color:"white", padding:"2px 6px", borderRadius:20, fontWeight:700 }}>Топ</span>}
+                <span style={{ fontSize:11, color:T.gray }}>↗</span>
               </div>
               <div>
                 {empty ? <span style={{ color:"#ccc" }}>—</span> : <span style={{ fontSize:17, fontWeight:700, color:T.green }}>{bank.rate_12m}%</span>}
@@ -193,18 +198,17 @@ export default function DepozytyPage() {
                 )}
               </div>
               <div style={{ fontSize:12, color:T.gray }}>{S}{Number(bank.min).toLocaleString("uk-UA")}</div>
-              <div style={{ textAlign:"center", fontSize:16 }}>{bank.online ? "✅" : "🏢"}</div>
               <div>
-                <a href="https://www.fg.gov.ua" target="_blank" rel="nofollow noopener" style={{ fontSize:11, color:T.green, textDecoration:"none", fontWeight:600 }}>✓ ФГВФО</a>
+                <span style={{ fontSize:11, color:T.green, fontWeight:600 }}>✓ ФГВФО</span>
               </div>
               <div>
                 {empty
                   ? <span style={{ fontSize:11, color:"#ccc" }}>немає даних</span>
-                  : <button onClick={() => handleAdd(bank)} style={{ width:"100%", padding:"6px 8px", borderRadius:7, fontSize:11, fontWeight:700, cursor:isDone?"default":"pointer", border:`1.5px solid ${isDone?T.green:T.border}`, background:isDone?T.greenLt:T.white, color:isDone?T.green:T.gray }}>
+                  : <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAdd(bank); }} style={{ width:"100%", padding:"6px 8px", borderRadius:7, fontSize:11, fontWeight:700, cursor:"pointer", border:`1.5px solid ${isDone?T.green:T.border}`, background:isDone?T.greenLt:T.white, color:isDone?T.green:T.gray }}>
                       {isDone ? "✓ Додано" : "+ Капітал"}
                     </button>}
               </div>
-            </div>
+            </a>
           );
         })}
       </div>

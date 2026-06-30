@@ -31,13 +31,13 @@
   },
   "ovdp": {
     "uah": [
-      { "term": "12 міс.", "months": 12, "rate": 16 },
-      { "term": "6 міс.",  "months": 6,  "rate": 15 },
-      { "term": "3 міс.",  "months": 3,  "rate": 13 }
+      { "term": "12 міс.", "months": 12, "rate": 15.4 },
+      { "term": "6 міс.",  "months": 6,  "rate": 14.7 },
+      { "term": "3 міс.",  "months": 3,  "rate": 13.9 }
     ],
     "eur": [
-      { "term": "12 міс.", "months": 12, "rate": 5 },
-      { "term": "6 міс.",  "months": 6,  "rate": 4 }
+      { "term": "12 міс.", "months": 12, "rate": 2.4 },
+      { "term": "6 міс.",  "months": 6,  "rate": 2.25 }
     ],
     "tax": 0.015
   },
@@ -45,16 +45,17 @@
     "tax": 0,
     "pdfo_refund": 0.18,
     "funds": [
-      { "id": "otp",     "name": "OTP Pension", "rate": 11, "license": "НКЦПФР", "url": "https://www.otppension.com.ua" },
-      { "id": "nnpf",    "name": "ННПФ",        "rate": 10, "license": "НКЦПФР", "url": "https://nnpf.com.ua" },
-      { "id": "dynasty", "name": "Династія",    "rate": 9,  "license": "НКЦПФР", "url": "https://dynasty.com.ua" }
+      { "id": "dynasty",    "name": "Династія",       "rate": 15.61, "license": "НКЦПФР", "url": "https://dynasty.icu" },
+      { "id": "otp",        "name": "ОТП Пенсія",     "rate": 14.74, "license": "НКЦПФР", "url": "https://www.otppension.com.ua" },
+      { "id": "privatfond", "name": "ПриватФонд",     "rate": 14.63, "license": "НКЦПФР", "url": "https://privatfond.com.ua" },
+      { "id": "emerit",     "name": "Емерит-Україна", "rate": 14.3,  "license": "НКЦПФР", "url": "https://upinvest.ua/funds/emerit" }
     ]
   },
   "etf": [
     { "id": "e1",  "ticker": "CSPX",  "yahoo": "CSPX.L",  "name": "iShares Core S&P 500",          "sector": "index"   },
     { "id": "e2",  "ticker": "VWCE",  "yahoo": "VWCE.DE", "name": "Vanguard FTSE All-World",        "sector": "index"   },
     { "id": "e3",  "ticker": "EUNL",  "yahoo": "EUNL.DE", "name": "iShares Core MSCI World",        "sector": "index"   },
-    { "id": "e4",  "ticker": "CNDX",  "yahoo": "CNDX.L",  "name": "iShares NASDAQ 100",              "sector": "index"   },
+    { "id": "e4",  "ticker": "CNDX",  "yahoo": "CNDX.L",  "name": "iShares NASDAQ 100",             "sector": "index"   },
     { "id": "e5",  "ticker": "IITU",  "yahoo": "IITU.L",  "name": "iShares S&P 500 IT Sector",      "sector": "tech"    },
     { "id": "e6",  "ticker": "WTCH",  "yahoo": "WTCH.L",  "name": "WisdomTree Global Technology",   "sector": "tech"    },
     { "id": "e7",  "ticker": "NATO",  "yahoo": "NATO.L",  "name": "VanEck Defense UCITS ETF",       "sector": "defense" },
@@ -68,18 +69,18 @@
     { "id": "e15", "ticker": "FLXF",  "yahoo": "FLXF.L",  "name": "Franklin FTSE Europe Financials","sector": "finance" }
   ],
   "commodities": [
-    { "id": "m1", "ticker": "IGLN", "yahoo": "SGLN.L", "name": "iShares Physical Gold",        "sub": "Фізичне золото · IBKR · LSE · EUR",          "sector": "metals", "risk": "low"  },
-    { "id": "m2", "ticker": "ISLN", "yahoo": "SSLN.L", "name": "iShares Physical Silver",      "sub": "Фізичне срібло · IBKR · LSE · EUR",          "sector": "metals", "risk": "mid"  },
-    { "id": "m3", "ticker": "SPPT", "yahoo": "SPPT.L", "name": "WisdomTree Physical Platinum", "sub": "Фізична платина · IBKR · LSE · EUR",          "sector": "metals", "risk": "mid"  },
-    { "id": "m4", "ticker": "AIGA", "yahoo": "AIGA.L", "name": "iShares Diversified Commodity","sub": "Диверсифіковані метали та сировина",          "sector": "metals", "risk": "mid"  },
-    { "id": "e1",  "ticker": "OILW", "yahoo": "OILW.L", "name": "WisdomTree Brent Crude Oil",   "sub": "Нафта Brent · IBKR · LSE · EUR · волатильний","sector": "energy", "risk": "high" },
-    { "id": "e2",  "ticker": "XDEW", "yahoo": "XDWE.L", "name": "Xtrackers MSCI World Energy",  "sub": "Глобальний енергетичний сектор · LSE",        "sector": "energy", "risk": "mid"  },
-    { "id": "e3",  "ticker": "INRG", "yahoo": "INRG.L", "name": "iShares Global Clean Energy",  "sub": "Відновлювана енергетика · сонце, вітер",      "sector": "energy", "risk": "high" },
-    { "id": "e4",  "ticker": "CMOD", "yahoo": "CMOD.L", "name": "iShares Diversified Commodity","sub": "Нафта, газ, зерно, метали — кошик",           "sector": "energy", "risk": "mid"  }
+    { "id": "m1", "ticker": "IGLN", "yahoo": "SGLN.L", "name": "iShares Physical Gold",         "sub": "Фізичне золото · IBKR · LSE · EUR",           "sector": "metals", "risk": "low"  },
+    { "id": "m2", "ticker": "ISLN", "yahoo": "SSLN.L", "name": "iShares Physical Silver",       "sub": "Фізичне срібло · IBKR · LSE · EUR",           "sector": "metals", "risk": "mid"  },
+    { "id": "m3", "ticker": "SPPT", "yahoo": "SPPT.L", "name": "WisdomTree Physical Platinum",  "sub": "Фізична платина · IBKR · LSE · EUR",           "sector": "metals", "risk": "mid"  },
+    { "id": "m4", "ticker": "AIGA", "yahoo": "AIGA.L", "name": "iShares Diversified Commodity", "sub": "Диверсифіковані метали та сировина",           "sector": "metals", "risk": "mid"  },
+    { "id": "e1", "ticker": "OILW", "yahoo": "OILW.L", "name": "WisdomTree Brent Crude Oil",    "sub": "Нафта Brent · IBKR · LSE · EUR · волатильний", "sector": "energy", "risk": "high" },
+    { "id": "e2", "ticker": "XDEW", "yahoo": "XDWE.L", "name": "Xtrackers MSCI World Energy",   "sub": "Глобальний енергетичний сектор · LSE",         "sector": "energy", "risk": "mid"  },
+    { "id": "e3", "ticker": "INRG", "yahoo": "INRG.L", "name": "iShares Global Clean Energy",   "sub": "Відновлювана енергетика · сонце, вітер",       "sector": "energy", "risk": "high" },
+    { "id": "e4", "ticker": "CMOD", "yahoo": "CMOD.L", "name": "iShares Diversified Commodity", "sub": "Нафта, газ, зерно, метали — кошик",            "sector": "energy", "risk": "mid"  }
   ],
   "realty_ua": [
-    { "id": "ribas",    "name": "Ribas Invest",  "sub": "Ribas Hotels Group · Україна / закордон", "rate": 12, "min": "$10 000", "url": "https://ribasinvest.com", "desc": "Співвласність у готелях під управлінням Ribas Hotels Group. 55 об'єктів в управлінні на понад $500 млн." },
-    { "id": "archotel", "name": "ARCHotel",      "sub": "5★ апарт-готель · Аркадія, Одеса",         "rate": 13.4, "min": "$25 000", "url": "https://prostranstvo.group", "desc": "Апартаменти в готелі на Аркадійській алеї в Одесі. Дохід $2500–4500/міс, капіталізація від 7% щорічно." }
+    { "id": "ribas",    "name": "Ribas Invest", "sub": "Ribas Hotels Group · Україна / закордон", "rate": 12,   "min": "$10 000", "url": "https://ribasinvest.com",     "desc": "Співвласність у готелях під управлінням Ribas Hotels Group. 55 об'єктів в управлінні на понад $500 млн." },
+    { "id": "archotel", "name": "ARCHotel",     "sub": "5★ апарт-готель · Аркадія, Одеса",        "rate": 13.4, "min": "$25 000", "url": "https://prostranstvo.group", "desc": "Апартаменти в готелі на Аркадійській алеї в Одесі. Дохід $2500–4500/міс, капіталізація від 7% щорічно." }
   ],
   "reit": [
     { "id": "reit1", "ticker": "IPRP", "yahoo": "IPRP.L", "name": "iShares Europe Property", "sub": "Нерухомість Європи · LSE" },

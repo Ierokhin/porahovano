@@ -94,6 +94,19 @@ export default function RootLayout({ children }) {
           `}
         </Script>
 
+        {/* ── Сайт у розробці ── */}
+        <div style={{
+          background: "#1A2E2A",
+          color: "#FFFFFF",
+          textAlign: "center",
+          padding: "8px 16px",
+          fontSize: 13,
+          fontWeight: 600,
+          lineHeight: 1.5,
+        }}>
+          🚧 Сайт у розробці — ставки та дані можуть бути неточними. Перевіряйте умови на сайті банку/брокера перед рішенням.
+        </div>
+
         <Header />
         <main>{children}</main>
         <Footer />

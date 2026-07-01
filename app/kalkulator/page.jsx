@@ -1,6 +1,6 @@
 "use client";
 // porahovano.in.ua/kalkulator — /app/kalkulator/page.jsx
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
 // ─── Brand ───────────────────────────────────────────────────────────────────
@@ -11,28 +11,12 @@ const M  = "#E1F5EE";
 const SU = "#F5FAF8";
 const PALETTE = ["#0F6E56","#1A8C6E","#3BAD8A","#EF9F27","#D4891E","#3B82C4","#8B5CF6","#EC4899","#14B8A6","#F97316"];
 
-// ─── Product catalogue (sorted by rate desc within each category) ─────────────
-const CATEGORIES = [
-  { id:"deposit", name:"Депозити", icon:"🏦", products:[
-    {id:"d1",name:"Юнекс Банк",   sub:"UAH · 12 міс.",rate:17,  cur:"uah",tax:0.195,risk:"mid", gtee:"ФГВФО"},
-    {id:"d2",name:"Таскомбанк",   sub:"UAH · 12 міс.",rate:16,  cur:"uah",tax:0.195,risk:"low", gtee:"ФГВФО"},
-    {id:"d3",name:"ПУМБ",         sub:"UAH · 12 міс.",rate:15,  cur:"uah",tax:0.195,risk:"low", gtee:"ФГВФО"},
-    {id:"d4",name:"Monobank",     sub:"UAH · 12 міс.",rate:13,  cur:"uah",tax:0.195,risk:"low", gtee:"ФГВФО"},
-    {id:"d5",name:"ПриватБанк",   sub:"UAH · 12 міс.",rate:12,  cur:"uah",tax:0.195,risk:"low", gtee:"ФГВФО"},
-    {id:"d6",name:"ПУМБ EUR",     sub:"EUR · 12 міс.",rate:2,   cur:"eur",tax:0.195,risk:"low", gtee:"ФГВФО"},
-    {id:"d7",name:"Райффайзен",   sub:"EUR · 12 міс.",rate:1.5, cur:"eur",tax:0.195,risk:"low", gtee:"ФГВФО"},
-  ]},
-  { id:"ovdp", name:"ОВДП", icon:"📜", products:[
-    {id:"o1",name:"ОВДП UAH",sub:"12 міс.",rate:16,cur:"uah",tax:0.015,risk:"low",gtee:"Держава",star:true},
-    {id:"o2",name:"ОВДП UAH",sub:"6 міс.", rate:15,cur:"uah",tax:0.015,risk:"low",gtee:"Держава",star:true},
-    {id:"o3",name:"ОВДП EUR",sub:"12 міс.",rate:5, cur:"eur",tax:0.015,risk:"low",gtee:"Держава",star:true},
-  ]},
-  { id:"npf", name:"НПФ", icon:"🏛", products:[
-    {id:"n1",name:"OTP Pension",sub:"UAH",rate:11,cur:"uah",tax:0,risk:"mid",gtee:"Немає",bonus:true},
-    {id:"n2",name:"ННПФ",       sub:"UAH",rate:10,cur:"uah",tax:0,risk:"mid",gtee:"Немає",bonus:true},
-    {id:"n3",name:"Династія",   sub:"UAH",rate:9, cur:"uah",tax:0,risk:"mid",gtee:"Немає",bonus:true},
-  ]},
-  { id:"etf", name:"ETF", icon:"📈", products:[
+// ─── Static catalogue (fallback поки rates.json не завантажився) ─────────────
+const CATEGORIES_DEFAULT = [
+  { id:"deposit", name:"Депозити", icon:"🏦", products:[]},
+  { id:"ovdp",    name:"ОВДП",     icon:"📜", products:[]},
+  { id:"npf",     name:"НПФ",      icon:"🏛", products:[]},
+  { id:"etf",     name:"ETF",      icon:"📈", products:[
     {id:"e2",name:"CSPX",sub:"S&P 500 · EUR",    rate:9.5,cur:"eur",tax:0.195,risk:"mid",gtee:"SIPC"},
     {id:"e1",name:"VWCE",sub:"All World · EUR",   rate:8.5,cur:"eur",tax:0.195,risk:"mid",gtee:"SIPC"},
     {id:"e3",name:"EUNL",sub:"iShares Core · EUR",rate:8,  cur:"eur",tax:0.195,risk:"mid",gtee:"SIPC"},
@@ -43,14 +27,64 @@ const CATEGORIES = [
     {id:"c2",name:"Aave DeFi",   sub:"USDC stable",      rate:4, cur:"eur",tax:0.195,risk:"high",gtee:"Немає"},
   ]},
   { id:"realty", name:"Нерухомість", icon:"🏨", products:[
-    {id:"r1",name:"Готель під управлінням",sub:"UAH",rate:14,cur:"uah",tax:0.195,risk:"mid",gtee:"Немає"},
-    {id:"r2",name:"Апарт-готель",          sub:"UAH",rate:12,cur:"uah",tax:0.195,risk:"mid",gtee:"Немає"},
+    {id:"r1",name:"Ribas Invest",sub:"UAH",rate:12,cur:"uah",tax:0.195,risk:"mid",gtee:"Немає"},
+    {id:"r2",name:"ARCHotel",    sub:"UAH",rate:13.4,cur:"uah",tax:0.195,risk:"mid",gtee:"Немає"},
   ]},
   { id:"gold", name:"Золото", icon:"🥇", products:[
-    {id:"g1",name:"Gold ETF",        sub:"EUR · IGLN",   rate:7,cur:"eur",tax:0.195,risk:"low",gtee:"Немає"},
-    {id:"g2",name:"Фізичне золото",  sub:"EUR · злитки", rate:6,cur:"eur",tax:0.195,risk:"low",gtee:"Немає"},
+    {id:"g1",name:"Gold ETF IGLN",sub:"EUR · LSE",rate:7,cur:"eur",tax:0.195,risk:"low",gtee:"Немає"},
   ]},
 ];
+
+// ─── Build categories from rates.json ────────────────────────────────────────
+function buildCategories(rates) {
+  if (!rates) return CATEGORIES_DEFAULT;
+
+  // Депозити UAH + EUR з rates.json (тільки ті що мають ставку)
+  const depoUah = (rates.depozyty?.uah ?? [])
+    .filter(b => b.rate_12m !== null)
+    .sort((a,b) => b.rate_12m - a.rate_12m)
+    .map(b => ({ id:`d_${b.id}`, name:b.name, sub:`UAH · 12 міс.`, rate:b.rate_12m, cur:"uah", tax:0.195, risk:"low", gtee:"ФГВФО" }));
+  const depoEur = (rates.depozyty?.eur ?? [])
+    .filter(b => b.rate_12m !== null)
+    .sort((a,b) => b.rate_12m - a.rate_12m)
+    .map(b => ({ id:`d_${b.id}_eur`, name:`${b.name} EUR`, sub:`EUR · 12 міс.`, rate:b.rate_12m, cur:"eur", tax:0.195, risk:"low", gtee:"ФГВФО" }));
+
+  // ОВДП — тільки 12 місяців
+  const ovdpUah = (rates.ovdp?.uah ?? [])
+    .filter(r => r.months === 12)
+    .map(r => ({ id:`o_uah_12`, name:"ОВДП UAH", sub:"12 міс. · Держава", rate:r.rate, cur:"uah", tax:rates.ovdp.tax ?? 0.015, risk:"low", gtee:"Держава", star:true }));
+  const ovdpEur = (rates.ovdp?.eur ?? [])
+    .filter(r => r.months === 12)
+    .map(r => ({ id:`o_eur_12`, name:"ОВДП EUR", sub:"12 міс. · Держава", rate:r.rate, cur:"eur", tax:rates.ovdp.tax ?? 0.015, risk:"low", gtee:"Держава", star:true }));
+
+  // НПФ з rates.json
+  const npf = (rates.npf?.funds ?? [])
+    .map(f => ({ id:`n_${f.id}`, name:f.name, sub:"UAH · пенсійний фонд", rate:f.rate, cur:"uah", tax:0, risk:"mid", gtee:"Немає", bonus:true }));
+
+  // Нерухомість з rates.json
+  const realty = (rates.realty_ua ?? [])
+    .map(r => ({ id:`r_${r.id}`, name:r.name, sub:"UAH", rate:r.rate, cur:"uah", tax:0.195, risk:"mid", gtee:"Немає" }));
+
+  return [
+    { id:"deposit", name:"Депозити",     icon:"🏦", products:[...depoUah, ...depoEur] },
+    { id:"ovdp",    name:"ОВДП",         icon:"📜", products:[...ovdpUah, ...ovdpEur] },
+    { id:"npf",     name:"НПФ",          icon:"🏛", products:npf },
+    { id:"etf",     name:"ETF",          icon:"📈", products:[
+      {id:"e2",name:"CSPX",sub:"S&P 500 · EUR",    rate:9.5,cur:"eur",tax:0.195,risk:"mid",gtee:"SIPC"},
+      {id:"e1",name:"VWCE",sub:"All World · EUR",   rate:8.5,cur:"eur",tax:0.195,risk:"mid",gtee:"SIPC"},
+      {id:"e3",name:"EUNL",sub:"iShares Core · EUR",rate:8,  cur:"eur",tax:0.195,risk:"mid",gtee:"SIPC"},
+    ]},
+    { id:"crypto",  name:"Блокчейн",     icon:"⛓", products:[
+      {id:"c3",name:"Bitcoin",     sub:"BTC · волатильний",rate:15,cur:"eur",tax:0.195,risk:"high",gtee:"Немає"},
+      {id:"c1",name:"Binance Earn",sub:"USDT stable",      rate:5, cur:"eur",tax:0.195,risk:"high",gtee:"Немає"},
+      {id:"c2",name:"Aave DeFi",   sub:"USDC stable",      rate:4, cur:"eur",tax:0.195,risk:"high",gtee:"Немає"},
+    ]},
+    { id:"realty",  name:"Нерухомість",  icon:"🏨", products:realty.length ? realty : CATEGORIES_DEFAULT.find(c=>c.id==="realty").products },
+    { id:"gold",    name:"Золото",       icon:"🥇", products:[
+      {id:"g1",name:"Gold ETF IGLN",sub:"EUR · LSE",rate:7,cur:"eur",tax:0.195,risk:"low",gtee:"Немає"},
+    ]},
+  ];
+}
 
 const RISK = {
   low:  {label:"Низький",  bg:"#E1F5EE",c:"#0F6E56"},
@@ -90,6 +124,15 @@ export default function MyCapital() {
   const [payoutMonths, setPayoutMonths] = useState(60);
   const [eurUah,       setEurUah]       = useState(42);
   const [curFilter,    setCurFilter]    = useState({});
+  const [CATEGORIES,   setCategories]   = useState(CATEGORIES_DEFAULT);
+
+  // Завантажуємо свіжі ставки з rates.json
+  useEffect(() => {
+    fetch("/data/rates.json")
+      .then(r => r.json())
+      .then(data => setCategories(buildCategories(data)))
+      .catch(() => {}); // fallback to CATEGORIES_DEFAULT
+  }, []);
 
   const cat       = CATEGORIES.find(c => c.id === tab);
   const tabFilter = curFilter[tab] || "all";

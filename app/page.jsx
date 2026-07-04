@@ -25,7 +25,7 @@ async function getRates() {
 }
 
 // ── Допоміжні функції ────────────────────────────────────────────────────────
-function net(rate, tax = 0.195) {
+function net(rate, tax = 0.23) {
   return +(rate * (1 - tax)).toFixed(1);
 }
 
@@ -120,13 +120,13 @@ export default async function HomePage() {
       name: topDepoUah?.name ?? "Юнекс Банк",
       sub:"Депозит · 12 міс. · ФГВФО",
       rate: topDepoUah ? `${net(topDepoUah.rate_12m)}%` : "13.7%",
-      note: topDepoUah ? `реально на руки (${topDepoUah.rate_12m}% − 19.5%)` : "реально на руки",
+      note: topDepoUah ? `реально на руки (${topDepoUah.rate_12m}% − 23%)` : "реально на руки",
       tag:"надійний, онлайн", dark:false,
     },
     {
       pos:"🥉 МІСЦЕ 3", name:"Нерухомість",
       sub:"Готель під управлінням · UAH",
-      rate:"11.3%", note:"реально на руки (14% − 19.5%)",
+      rate:"11.3%", note:"реально на руки (14% − 23%)",
       tag:"пасивний дохід", dark:false,
     },
   ];
@@ -144,7 +144,7 @@ export default async function HomePage() {
             Де краще<br/>тримати гроші<br/><span style={{ color:G }}>в Україні?</span>
           </h1>
           <p style={{ fontSize:15, color:GR, lineHeight:1.75, margin:"0 0 28px", maxWidth:440 }}>
-            Порівнюємо депозити, ОВДП, ETF та НПФ. Показуємо реальну дохідність після 19.5% податку — у гривні та євро.
+            Порівнюємо депозити, ОВДП, ETF та НПФ. Показуємо реальну дохідність після 23% податку — у гривні та євро.
           </p>
           <div style={{ display:"flex", gap:12, flexWrap:"wrap" }}>
             <Link href="/kalkulator" style={{ padding:"12px 22px", background:G, color:"white", borderRadius:10, fontSize:14, fontWeight:700, textDecoration:"none" }}>
@@ -207,7 +207,7 @@ export default async function HomePage() {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:1, background:B, border:`1px solid ${B}`, borderRadius:14, overflow:"hidden", marginBottom:48 }}>
         {[
           { val:"7",         lbl:"інструментів порівняно" },
-          { val:"19.5%",     lbl:"реальний податок на депозити" },
+          { val:"23%",     lbl:"реальний податок на депозити" },
           { val:"1.5%",      lbl:"податок на ОВДП (пільга)" },
           { val:"600 000 ₴", lbl:"гарантія ФГВФО на банк" },
         ].map(({ val, lbl }) => (

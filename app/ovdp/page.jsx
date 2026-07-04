@@ -20,7 +20,7 @@ const BROKERS = [
 ];
 
 const FAQ = [
-  { q:"Що таке ОВДП і чим відрізняються від депозиту?", a:"ОВДП — облігації внутрішньої державної позики. Лише 1.5% податку (військовий збір) замість 19.5%, тому реальна дохідність вища. Гарантія — держава, а не ФГВФО." },
+  { q:"Що таке ОВДП і чим відрізняються від депозиту?", a:"ОВДП — облігації внутрішньої державної позики. Лише 1.5% податку (військовий збір) замість 23%, тому реальна дохідність вища. Гарантія — держава, а не ФГВФО." },
   { q:"Чому ОВДП вигідніші за депозити при однаковій ставці?", a:"ОВДП звільнені від 18% ПДФО — стягується лише 1.5% військового збору. Різниця у 2.86 п.п. щороку — суттєво на горизонті 3–5 років." },
   { q:"Як купити ОВДП фізичній особі в Україні?", a:"Через застосунок Дія (найпростіше), Monobank, або брокера — Dragon Capital, Універ чи Freedom24. Рахунок відкривається онлайн за 15–30 хвилин." },
   { q:"Чи можна продати ОВДП раніше строку?", a:"Так, через вторинний ринок у брокера. Ціна визначається ринком, а не банком." },
@@ -62,7 +62,7 @@ export default function OvdpPage() {
     ? [...rates.depozyty.uah].filter(b=>b.rate_12m!==null).sort((a,b)=>b.rate_12m-a.rate_12m)[0]
     : null;
   const depoRate = topDepoUah?.rate_12m ?? null;
-  const depoTax  = 0.195;
+  const depoTax  = 0.23;
 
   const EX_SUM   = cur === "uah" ? 100000 : 5000;
   const EX_RATE  = topRate ?? (cur === "uah" ? 16 : 5);
@@ -99,10 +99,10 @@ export default function OvdpPage() {
           ОВДП в Україні:<br/><span style={{color:T.green}}>{topRate ? `до ${topRate}% річних · лише 1.5% податку` : "лише 1.5% податку"}</span>
         </h1>
         <p style={{fontSize:15,color:T.gray,maxWidth:580,lineHeight:1.75,margin:"0 0 24px"}}>
-          Облігації державної позики — єдиний інструмент в Україні з пільговим оподаткуванням. Замість 19.5% стягується лише <strong>1.5% військового збору</strong>.
+          Облігації державної позики — єдиний інструмент в Україні з пільговим оподаткуванням. Замість 23% стягується лише <strong>1.5% військового збору</strong>.
         </p>
         <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-          {[{val:topRate?`до ${topRate}%`:"—",lbl:"річних у гривні"},{val:`${tax*100}%`,lbl:"єдиний податок (vs 19.5%)"},{val:"Держава",lbl:"гарантія погашення"}].map(({val,lbl}) => (
+          {[{val:topRate?`до ${topRate}%`:"—",lbl:"річних у гривні"},{val:`${tax*100}%`,lbl:"єдиний податок (vs 23%)"},{val:"Держава",lbl:"гарантія погашення"}].map(({val,lbl}) => (
             <div key={lbl} style={{background:T.greenLt,borderRadius:12,padding:"12px 18px",minWidth:130}}>
               <div style={{fontSize:22,fontWeight:700,color:T.green}}>{val}</div>
               <div style={{fontSize:12,color:T.gray,marginTop:2}}>{lbl}</div>
@@ -196,7 +196,7 @@ export default function OvdpPage() {
           <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:4}}>
             {[{lbl:"Вкладаєте",val:`${S}${EX_SUM.toLocaleString("uk-UA")}`,sub:`під ${EX_RATE}%`,c:T.dark},null,
               {lbl:"Нараховано",val:`+${S}${Math.round(EX_GROSS).toLocaleString("uk-UA")}`,sub:"за 12 місяців",c:T.green},null,
-              {lbl:`Збір ${tax*100}%`,val:`−${S}${Math.round(EX_TAX).toLocaleString("uk-UA")}`,sub:"vs 19.5% у депозиті",c:T.amber},null,
+              {lbl:`Збір ${tax*100}%`,val:`−${S}${Math.round(EX_TAX).toLocaleString("uk-UA")}`,sub:"vs 23% у депозиті",c:T.amber},null,
               {lbl:"На руки",val:`${S}${Math.round(EX_NET).toLocaleString("uk-UA")}`,sub:`реально ${net(EX_RATE)}%`,c:T.green}]
               .map((item,i) => item===null
                 ? <div key={i} style={{fontSize:20,color:T.gray,padding:"0 2px"}}>→</div>

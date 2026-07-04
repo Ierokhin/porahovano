@@ -17,7 +17,7 @@ const TYPE = {
   private: { label:"Прив",  bg:"#FFF8EC", c:"#D4891E" },
 };
 
-const net = (r) => +(r * 0.805).toFixed(1);
+const net = (r) => +(r * 0.77).toFixed(1);
 
 function Toast({ name, onClose }) {
   return (
@@ -35,8 +35,8 @@ function Toast({ name, onClose }) {
 const FAQ = [
   { q:"Яка різниця між державним та іноземним банком для вкладника?",
     a:"Для звичайного вкладника різниця мінімальна — обидва покриваються ФГВФО до 600 000 ₴. Державні банки (ПриватБанк, Ощадбанк) мають імпліцитну 100% держгарантію. Іноземні підтримуються материнськими структурами. Приватні українські покладаються лише на ФГВФО." },
-  { q:"Як розраховується податок 19.5% на депозит?",
-    a:"18% ПДФО + 1.5% військовий збір = 19.5% від суми нарахованих відсотків. Банк утримує автоматично. Наприклад: 100 000 ₴ під 17% → нараховано 17 000 ₴ → податок 3 315 ₴ → на руки 13 685 ₴ (реально 13.7%)." },
+  { q:"Як розраховується податок 23% на депозит?",
+    a:"18% ПДФО + 5% військовий збір = 23% від суми нарахованих відсотків. Банк утримує автоматично. Наприклад: 100 000 ₴ під 17% → нараховано 17 000 ₴ → податок 3 910 ₴ → на руки 13 090 ₴ (реально 13.1%)." },
   { q:"Чи безпечно тримати більше 600 000 ₴ в одному банку?",
     a:"Ризиковано. ФГВФО гарантує лише 600 000 ₴. Суму понад ліміт можна втратити при банкрутстві. Рекомендація: розподіли між 2-3 банками або обери держбанк — вони мають імпліцитну 100% держгарантію." },
   { q:"Коли вигідніше ОВДП ніж депозит?",
@@ -76,7 +76,7 @@ export default function DepozytyPage() {
         localStorage.setItem("porahovano_portfolio", JSON.stringify([...prev, {
           id: Date.now(), productId: id,
           name: bank.name, sub: `${cur.toUpperCase()} · 12 міс.`,
-          rate: bank.rate_12m, cur, tax: 0.195, risk: "low", gtee: "ФГВФО",
+          rate: bank.rate_12m, cur, tax: 0.23, risk: "low", gtee: "ФГВФО",
           color: T.green, lump: 0, monthly: cur === "uah" ? 5000 : 200,
         }]));
       }
@@ -109,14 +109,14 @@ export default function DepozytyPage() {
           </span>
         </h1>
         <p style={{ fontSize:14, color:T.gray, maxWidth:580, lineHeight:1.75, margin:"0 0 20px" }}>
-          Банки відсортовані за рейтингом капіталізації НБУ. Реальна дохідність після 19.5% податку. Банки без ставки — не пропонують депозити фізособам або дані ще не оновлені.
+          Банки відсортовані за рейтингом капіталізації НБУ. Реальна дохідність після 23% податку. Банки без ставки — не пропонують депозити фізособам або дані ще не оновлені.
         </p>
         <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
           {[
             { val: bestRate ? `${bestRate}%` : "—",      lbl:"топ ставка · 12 міс." },
-            { val: bestRate ? `${net(bestRate)}%` : "—", lbl:"реально після 19.5%" },
+            { val: bestRate ? `${net(bestRate)}%` : "—", lbl:"реально після 23%" },
             { val:"600 000 ₴",                           lbl:"гарантія ФГВФО на банк" },
-            { val:"19.5%",                               lbl:"ПДФО 18% + вз 1.5%" },
+            { val:"23%",     lbl:"ПДФО 18% + вз 5%" },
           ].map(({ val, lbl }) => (
             <div key={lbl} style={{ background:T.greenLt, borderRadius:12, padding:"10px 16px", minWidth:110 }}>
               <div style={{ fontSize:20, fontWeight:700, color:T.green }}>{val}</div>
@@ -193,7 +193,7 @@ export default function DepozytyPage() {
                 {empty ? <span style={{ color:"#ccc" }}>—</span> : (
                   <div>
                     <div style={{ fontSize:13, fontWeight:700, color:T.amber }}>{net(bank.rate_12m)}%</div>
-                    <div style={{ fontSize:10, color:T.gray }}>−19.5%</div>
+                    <div style={{ fontSize:10, color:T.gray }}>−23%</div>
                   </div>
                 )}
               </div>

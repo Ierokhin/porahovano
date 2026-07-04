@@ -29,7 +29,7 @@ const SECT_COLORS = {
 const FAQ = [
   { q:"Чи доступний IBKR для громадян України?", a:"Так. Interactive Brokers відкриває рахунки для громадян України, в тому числі тих хто зараз за кордоном. Потрібен паспорт, підтвердження адреси і заповнення анкети онлайн. Верифікація займає 3–7 робочих днів." },
   { q:"Як переказати гроші на IBKR з України?", a:"Картковий переказ в EUR — до ~$2 400/міс за правилами НБУ, або SWIFT-переказ з банку для більших сум. Monobank і ПУМБ добре проводять такі перекази." },
-  { q:"Які податки сплачувати в Україні з ETF?", a:"18% ПДФО + 1.5% військовий збір = 19.5% від прибутку при продажу. Поки тримаєш ETF і не продаєш — податку немає." },
+  { q:"Які податки сплачувати в Україні з ETF?", a:"18% ПДФО + 1.5% військовий збір = 23% від прибутку при продажу. Поки тримаєш ETF і не продаєш — податку немає." },
   { q:"Звідки береться дохідність на цій сторінці?", a:"Реальна ціна закриття сьогодні і рік тому через Yahoo Finance (тикери на LSE). Формула: (ціна сьогодні − ціна рік тому) / ціна рік тому × 100. Оновлюється раз на годину." },
   { q:"NATO ETF — що це?", a:"VanEck Defense UCITS ETF інвестує в оборонні компанії NATO: Rheinmetall, BAE Systems, Leonardo. Висока волатильність, геополітичний ризик." },
 ];
@@ -143,7 +143,7 @@ export default function EtfPage() {
         {returnsState === "ok" && (
           <div style={{ border:`1.5px solid ${T.border}`, borderRadius:14, overflow:"hidden", marginBottom:8 }}>
             <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 90px 110px 80px 110px", padding:"8px 14px", background:T.grayLt, fontSize:10, fontWeight:700, color:T.gray, letterSpacing:".04em" }}>
-              {["ТИКЕР","НАЗВА / ІНДЕКС","12 МІС.","ПІСЛЯ 19.5%","РИЗИК","МІЙ КАПІТАЛ"].map(h => <div key={h}>{h}</div>)}
+              {["ТИКЕР","НАЗВА / ІНДЕКС","12 МІС.","ПІСЛЯ 23%","РИЗИК","МІЙ КАПІТАЛ"].map(h => <div key={h}>{h}</div>)}
             </div>
             {filtered.map((etf, i) => {
               const sc = SECT_COLORS[etf.sector];
@@ -158,7 +158,7 @@ export default function EtfPage() {
                     </div>
                   </div>
                   <div style={{ fontSize:17, fontWeight:700, color: etf.rate>=0?T.green:"#C0392B" }}>{etf.rate>=0?"+":""}{etf.rate}%</div>
-                  <div style={{ fontSize:13, fontWeight:700, color:T.amber }}>{(etf.rate*0.805).toFixed(1)}%</div>
+                  <div style={{ fontSize:13, fontWeight:700, color:T.amber }}>{(etf.rate*0.77).toFixed(1)}%</div>
                   <div><span style={{ fontSize:11, padding:"2px 7px", borderRadius:20, background:RISK.bg, color:RISK.c, fontWeight:600 }}>{RISK.l}</span></div>
                   <div>
                     <button onClick={() => handleAdd(etf)} style={{ width:"100%", padding:"6px 8px", borderRadius:8, fontSize:11, fontWeight:700, cursor:isDone?"default":"pointer", border:`1.5px solid ${isDone?T.green:T.border}`, background:isDone?T.greenLt:T.white, color:isDone?T.green:T.gray }}>{isDone?"✓ Додано":"+ Капітал"}</button>

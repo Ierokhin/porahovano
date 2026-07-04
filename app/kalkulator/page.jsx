@@ -17,21 +17,21 @@ const CATEGORIES_DEFAULT = [
   { id:"ovdp",    name:"ОВДП",     icon:"📜", products:[]},
   { id:"npf",     name:"НПФ",      icon:"🏛", products:[]},
   { id:"etf",     name:"ETF",      icon:"📈", products:[
-    {id:"e2",name:"CSPX",sub:"S&P 500 · EUR",    rate:9.5,cur:"eur",tax:0.195,risk:"mid",gtee:"SIPC"},
-    {id:"e1",name:"VWCE",sub:"All World · EUR",   rate:8.5,cur:"eur",tax:0.195,risk:"mid",gtee:"SIPC"},
-    {id:"e3",name:"EUNL",sub:"iShares Core · EUR",rate:8,  cur:"eur",tax:0.195,risk:"mid",gtee:"SIPC"},
+    {id:"e2",name:"CSPX",sub:"S&P 500 · EUR",    rate:9.5,cur:"eur",tax:0.23,risk:"mid",gtee:"SIPC"},
+    {id:"e1",name:"VWCE",sub:"All World · EUR",   rate:8.5,cur:"eur",tax:0.23,risk:"mid",gtee:"SIPC"},
+    {id:"e3",name:"EUNL",sub:"iShares Core · EUR",rate:8,  cur:"eur",tax:0.23,risk:"mid",gtee:"SIPC"},
   ]},
   { id:"crypto", name:"Блокчейн", icon:"⛓", products:[
-    {id:"c3",name:"Bitcoin",     sub:"BTC · волатильний",rate:15,cur:"eur",tax:0.195,risk:"high",gtee:"Немає"},
-    {id:"c1",name:"Binance Earn",sub:"USDT stable",      rate:5, cur:"eur",tax:0.195,risk:"high",gtee:"Немає"},
-    {id:"c2",name:"Aave DeFi",   sub:"USDC stable",      rate:4, cur:"eur",tax:0.195,risk:"high",gtee:"Немає"},
+    {id:"c3",name:"Bitcoin",     sub:"BTC · волатильний",rate:15,cur:"eur",tax:0.23,risk:"high",gtee:"Немає"},
+    {id:"c1",name:"Binance Earn",sub:"USDT stable",      rate:5, cur:"eur",tax:0.23,risk:"high",gtee:"Немає"},
+    {id:"c2",name:"Aave DeFi",   sub:"USDC stable",      rate:4, cur:"eur",tax:0.23,risk:"high",gtee:"Немає"},
   ]},
   { id:"realty", name:"Нерухомість", icon:"🏨", products:[
-    {id:"r1",name:"Ribas Invest",sub:"UAH",rate:12,cur:"uah",tax:0.195,risk:"mid",gtee:"Немає"},
-    {id:"r2",name:"ARCHotel",    sub:"UAH",rate:13.4,cur:"uah",tax:0.195,risk:"mid",gtee:"Немає"},
+    {id:"r1",name:"Ribas Invest",sub:"UAH",rate:12,cur:"uah",tax:0.23,risk:"mid",gtee:"Немає"},
+    {id:"r2",name:"ARCHotel",    sub:"UAH",rate:13.4,cur:"uah",tax:0.23,risk:"mid",gtee:"Немає"},
   ]},
   { id:"gold", name:"Золото", icon:"🥇", products:[
-    {id:"g1",name:"Gold ETF IGLN",sub:"EUR · LSE",rate:7,cur:"eur",tax:0.195,risk:"low",gtee:"Немає"},
+    {id:"g1",name:"Gold ETF IGLN",sub:"EUR · LSE",rate:7,cur:"eur",tax:0.23,risk:"low",gtee:"Немає"},
   ]},
 ];
 
@@ -43,11 +43,11 @@ function buildCategories(rates) {
   const depoUah = (rates.depozyty?.uah ?? [])
     .filter(b => b.rate_12m !== null)
     .sort((a,b) => b.rate_12m - a.rate_12m)
-    .map(b => ({ id:`d_${b.id}`, name:b.name, sub:`UAH · 12 міс.`, rate:b.rate_12m, cur:"uah", tax:0.195, risk:"low", gtee:"ФГВФО" }));
+    .map(b => ({ id:`d_${b.id}`, name:b.name, sub:`UAH · 12 міс.`, rate:b.rate_12m, cur:"uah", tax:0.23, risk:"low", gtee:"ФГВФО" }));
   const depoEur = (rates.depozyty?.eur ?? [])
     .filter(b => b.rate_12m !== null)
     .sort((a,b) => b.rate_12m - a.rate_12m)
-    .map(b => ({ id:`d_${b.id}_eur`, name:`${b.name} EUR`, sub:`EUR · 12 міс.`, rate:b.rate_12m, cur:"eur", tax:0.195, risk:"low", gtee:"ФГВФО" }));
+    .map(b => ({ id:`d_${b.id}_eur`, name:`${b.name} EUR`, sub:`EUR · 12 міс.`, rate:b.rate_12m, cur:"eur", tax:0.23, risk:"low", gtee:"ФГВФО" }));
 
   // ОВДП — тільки 12 місяців
   const ovdpUah = (rates.ovdp?.uah ?? [])
@@ -63,25 +63,30 @@ function buildCategories(rates) {
 
   // Нерухомість з rates.json
   const realty = (rates.realty_ua ?? [])
-    .map(r => ({ id:`r_${r.id}`, name:r.name, sub:"UAH", rate:r.rate, cur:"uah", tax:0.195, risk:"mid", gtee:"Немає" }));
+    .map(r => ({ id:`r_${r.id}`, name:r.name, sub:"UAH", rate:r.rate, cur:"uah", tax:0.23, risk:"mid", gtee:"Немає" }));
 
   return [
     { id:"deposit", name:"Депозити",     icon:"🏦", products:[...depoUah, ...depoEur] },
     { id:"ovdp",    name:"ОВДП",         icon:"📜", products:[...ovdpUah, ...ovdpEur] },
     { id:"npf",     name:"НПФ",          icon:"🏛", products:npf },
-    { id:"etf",     name:"ETF",          icon:"📈", products:[
-      {id:"e2",name:"CSPX",sub:"S&P 500 · EUR",    rate:9.5,cur:"eur",tax:0.195,risk:"mid",gtee:"SIPC"},
-      {id:"e1",name:"VWCE",sub:"All World · EUR",   rate:8.5,cur:"eur",tax:0.195,risk:"mid",gtee:"SIPC"},
-      {id:"e3",name:"EUNL",sub:"iShares Core · EUR",rate:8,  cur:"eur",tax:0.195,risk:"mid",gtee:"SIPC"},
-    ]},
+    { id:"etf",     name:"ETF",          icon:"📈", products:
+      (rates.etf ?? []).slice(0,5).map(e => ({
+        id:`etf_${e.id}`, name:e.ticker, sub:`${e.name} · EUR`,
+        rate:9.5, cur:"eur", tax:0.23, risk:"mid", gtee:"SIPC"
+      })).concat([
+        {id:"e2",name:"CSPX",sub:"S&P 500 · EUR",    rate:9.5,cur:"eur",tax:0.23,risk:"mid",gtee:"SIPC"},
+        {id:"e1",name:"VWCE",sub:"All World · EUR",   rate:8.5,cur:"eur",tax:0.23,risk:"mid",gtee:"SIPC"},
+        {id:"e3",name:"EUNL",sub:"iShares Core · EUR",rate:8,  cur:"eur",tax:0.23,risk:"mid",gtee:"SIPC"},
+      ]).filter((v,i,a)=>a.findIndex(x=>x.name===v.name)===i).slice(0,7)
+    },
     { id:"crypto",  name:"Блокчейн",     icon:"⛓", products:[
-      {id:"c3",name:"Bitcoin",     sub:"BTC · волатильний",rate:15,cur:"eur",tax:0.195,risk:"high",gtee:"Немає"},
-      {id:"c1",name:"Binance Earn",sub:"USDT stable",      rate:5, cur:"eur",tax:0.195,risk:"high",gtee:"Немає"},
-      {id:"c2",name:"Aave DeFi",   sub:"USDC stable",      rate:4, cur:"eur",tax:0.195,risk:"high",gtee:"Немає"},
+      {id:"c3",name:"Bitcoin",     sub:"BTC · волатильний",rate:15,cur:"eur",tax:0.23,risk:"high",gtee:"Немає"},
+      {id:"c1",name:"Binance Earn",sub:"USDT stable",      rate:5, cur:"eur",tax:0.23,risk:"high",gtee:"Немає"},
+      {id:"c2",name:"Aave DeFi",   sub:"USDC stable",      rate:4, cur:"eur",tax:0.23,risk:"high",gtee:"Немає"},
     ]},
     { id:"realty",  name:"Нерухомість",  icon:"🏨", products:realty.length ? realty : CATEGORIES_DEFAULT.find(c=>c.id==="realty").products },
     { id:"gold",    name:"Золото",       icon:"🥇", products:[
-      {id:"g1",name:"Gold ETF IGLN",sub:"EUR · LSE",rate:7,cur:"eur",tax:0.195,risk:"low",gtee:"Немає"},
+      {id:"g1",name:"Gold ETF IGLN",sub:"EUR · LSE",rate:7,cur:"eur",tax:0.23,risk:"low",gtee:"Немає"},
     ]},
   ];
 }

@@ -101,7 +101,7 @@ function MetalsSection() {
             <div style={{fontSize:22}}>{item.sector==="metals"?"🥇":"🛢"}</div>
             <div><div style={{fontWeight:700,fontSize:13,fontFamily:"monospace",color:T.green}}>{item.ticker} <span style={{fontFamily:"inherit",color:T.dark,fontWeight:600,fontSize:13}}>· {item.name}</span></div><div style={{fontSize:11,color:T.gray,marginTop:2}}>{item.sub}</div></div>
             <div style={{fontSize:16,fontWeight:700,color:item.rate>=0?T.green:"#C0392B"}}>{item.rate>=0?"+":""}{item.rate}%</div>
-            <div><div style={{fontSize:13,fontWeight:700,color:T.amber}}>{(item.rate*0.805).toFixed(1)}%</div><div style={{fontSize:10,color:T.gray}}>−19.5%</div></div>
+            <div><div style={{fontSize:13,fontWeight:700,color:T.amber}}>{(item.rate*0.77).toFixed(1)}%</div><div style={{fontSize:10,color:T.gray}}>−23%</div></div>
             <div><RiskBadge risk={item.risk}/></div>
             <div><AddBtn id={item.id} name={item.ticker} added={isDone} onAdd={handleAdd}/></div>
           </div>
@@ -241,7 +241,7 @@ export default function AlternatyvniPage() {
           {cryptoTab === "staking" && (
             <div style={{ border:`1.5px solid ${T.border}`, borderRadius:14, overflow:"hidden" }}>
               <div style={{ ...colGrid("32px 1fr 90px 90px 1fr 110px"), background:T.grayLt, fontSize:10, fontWeight:700, color:T.gray, letterSpacing:".04em" }}>
-                <div/><div>АКТИВ</div><div>СТЕЙК %</div><div>ПІСЛЯ 19.5%</div><div>ПЛАТФОРМА</div><div>МІЙ КАПІТАЛ</div>
+                <div/><div>АКТИВ</div><div>СТЕЙК %</div><div>ПІСЛЯ 23%</div><div>ПЛАТФОРМА</div><div>МІЙ КАПІТАЛ</div>
               </div>
               {STAKING.map(s => (
                 <div key={s.id} style={{ ...colGrid("32px 1fr 90px 90px 1fr 110px"), borderTop:`1px solid ${T.border}` }}>
@@ -259,7 +259,7 @@ export default function AlternatyvniPage() {
           {cryptoTab === "stable" && (
             <div style={{ border:`1.5px solid ${T.border}`, borderRadius:14, overflow:"hidden" }}>
               <div style={{ ...colGrid("1fr 90px 90px 90px 110px"), background:T.grayLt, fontSize:10, fontWeight:700, color:T.gray, letterSpacing:".04em" }}>
-                <div>СТЕЙБЛКОЇН</div><div>СТАВКА</div><div>ПІСЛЯ 19.5%</div><div>РИЗИК</div><div>МІЙ КАПІТАЛ</div>
+                <div>СТЕЙБЛКОЇН</div><div>СТАВКА</div><div>ПІСЛЯ 23%</div><div>РИЗИК</div><div>МІЙ КАПІТАЛ</div>
               </div>
               {STABLECOINS.map(s => (
                 <div key={s.id} style={{ ...colGrid("1fr 90px 90px 90px 110px"), borderTop:`1px solid ${T.border}` }}>

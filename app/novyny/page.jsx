@@ -24,9 +24,7 @@ const NOTION_TOKEN  = process.env.NOTION_TOKEN; // додай в Vercel env vars
 
 // ─── Fetch articles from Notion ───────────────────────────────────────────────
 async function getArticles() {
-  if (!NOTION_TOKEN) {
-    return { articles: [], debug: "NOTION_TOKEN відсутній в process.env" };
-  }
+  if (!NOTION_TOKEN) return [];
   try {
     const res = await fetch(`https://api.notion.com/v1/databases/${NOTION_DB_ID}/query`, {
       method: "POST",
@@ -42,11 +40,9 @@ async function getArticles() {
       }),
       cache: "no-store",
     });
+    if (!res.ok) return [];
     const data = await res.json();
-    if (!res.ok) {
-      return { articles: [], debug: `Notion API error ${res.status}: ${JSON.stringify(data)}` };
-    }
-    const articles = (data.results ?? []).map(page => ({
+    return (data.results ?? []).map(page => ({
       id:       page.id,
       title:    page.properties?.Name?.title?.[0]?.plain_text ?? "",
       excerpt:  page.properties?.Excerpt?.rich_text?.[0]?.plain_text ?? "",
@@ -54,9 +50,9 @@ async function getArticles() {
       category: page.properties?.Category?.select?.name ?? "Ринок",
       date:     page.properties?.Date?.date?.start ?? "",
     })).filter(a => a.title);
-    return { articles, debug: `OK: знайдено ${data.results?.length ?? 0} записів, після фільтра ${articles.length}` };
   } catch (e) {
-    return { articles: [], debug: `Exception: ${String(e.message || e)}` };
+    console.error("Notion fetch error:", e);
+    return [];
   }
 }
 
@@ -95,7 +91,7 @@ function ArticleCard({ article, featured }) {
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-export const dynamic = "force-dynamic"; // тимчасово — вимикаємо кеш повністю для діагностики
+export const revalidate = 300; // ISR — оновлення кожні 5 хв (no-store в fetch забезпечує свіжість даних)
 
 export const metadata = {
   title: "Новини · Porahovano",
@@ -103,7 +99,7 @@ export const metadata = {
 };
 
 export default async function NovynyPage() {
-  const { articles, debug } = await getArticles();
+  const articles = await getArticles();
   const hasArticles = articles.length > 0;
 
   return (
@@ -121,11 +117,6 @@ export default async function NovynyPage() {
       <p style={{ fontSize:14, color:T.gray, lineHeight:1.7, margin:"0 0 28px" }}>
         Актуальні фінансові новини для українських інвесторів. Оновлюється щодня.
       </p>
-
-      {/* ── TEMP DEBUG — прибрати коли проблема вирішена ── */}
-      <div style={{ background:"#FFF3CD", border:"2px solid #FFC107", borderRadius:10, padding:"10px 14px", marginBottom:20, fontSize:12, fontFamily:"monospace", color:"#664D03" }}>
-        🔧 DEBUG: {debug}
-      </div>
 
       {/* Telegram CTA */}
       <div style={{ background:T.dark, borderRadius:14, padding:"18px 22px", display:"flex", alignItems:"center", gap:16, marginBottom:32, flexWrap:"wrap" }}>

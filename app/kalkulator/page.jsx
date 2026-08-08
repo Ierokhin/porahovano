@@ -1,7 +1,8 @@
 "use client";
 // porahovano.in.ua/kalkulator — /app/kalkulator/page.jsx
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { buildAllCategories, readPortfolio, writePortfolio } from "@/lib/instruments";
 
 // ─── Brand ───────────────────────────────────────────────────────────────────
 const G  = "#0F6E56";
@@ -9,181 +10,16 @@ const A  = "#EF9F27";
 const D  = "#1A2E2A";
 const M  = "#E1F5EE";
 const SU = "#F5FAF8";
-const PALETTE = ["#0F6E56","#1A8C6E","#3BAD8A","#EF9F27","#D4891E","#3B82C4","#8B5CF6","#EC4899","#14B8A6","#F97316"];
 
-// ─── Static catalogue (fallback поки rates.json не завантажився) ─────────────
-const CATEGORIES_DEFAULT = [
-  { id:"deposit", name:"Депозити", icon:"🏦", products:[]},
-  { id:"ovdp",    name:"ОВДП",     icon:"📜", products:[]},
-  { id:"npf",     name:"НПФ",      icon:"🏛", products:[]},
-  { id:"etf",     name:"ETF",      icon:"📈", products:[
-    {id:"e2",name:"CSPX",sub:"S&P 500 · EUR",    rate:9.5,cur:"eur",tax:0.23,risk:"mid",gtee:"SIPC"},
-    {id:"e1",name:"VWCE",sub:"All World · EUR",   rate:8.5,cur:"eur",tax:0.23,risk:"mid",gtee:"SIPC"},
-    {id:"e3",name:"EUNL",sub:"iShares Core · EUR",rate:8,  cur:"eur",tax:0.23,risk:"mid",gtee:"SIPC"},
-  ]},
-  { id:"crypto", name:"Блокчейн", icon:"⛓", products:[
-    {id:"c3",name:"Bitcoin",     sub:"BTC · волатильний",rate:15,cur:"eur",tax:0.23,risk:"high",gtee:"Немає"},
-    {id:"c1",name:"Binance Earn",sub:"USDT stable",      rate:5, cur:"eur",tax:0.23,risk:"high",gtee:"Немає"},
-    {id:"c2",name:"Aave DeFi",   sub:"USDC stable",      rate:4, cur:"eur",tax:0.23,risk:"high",gtee:"Немає"},
-  ]},
-  { id:"realty", name:"Нерухомість", icon:"🏨", products:[
-    {id:"r1",name:"Ribas Invest",sub:"UAH",rate:12,cur:"uah",tax:0.23,risk:"mid",gtee:"Немає"},
-    {id:"r2",name:"ARCHotel",    sub:"UAH",rate:13.4,cur:"uah",tax:0.23,risk:"mid",gtee:"Немає"},
-  ]},
-  { id:"gold", name:"Золото", icon:"🥇", products:[
-    {id:"g1",name:"Gold ETF IGLN",sub:"EUR · LSE",rate:7,cur:"eur",tax:0.23,risk:"low",gtee:"Немає"},
-  ]},
+// Категорії до завантаження rates.json — ті самі id/назви/іконки, що потім
+// поверне buildAllCategories(), просто ще без продуктів.
+const EMPTY_CATEGORIES = [
+  { id:"deposit",     name:"Депозити",      icon:"🏦", products:[] },
+  { id:"ovdp",        name:"ОВДП",          icon:"📜", products:[] },
+  { id:"npf",         name:"НПФ",           icon:"🏛", products:[] },
+  { id:"etf",         name:"ETF",           icon:"📈", products:[] },
+  { id:"alternative", name:"Альтернативні", icon:"🧩", products:[] },
 ];
-
-// ─── Build categories from rates.json ────────────────────────────────────────
-function buildCategories(rates) {
-  if (!rates) return CATEGORIES_DEFAULT;
-
-  // Депозити UAH + EUR з rates.json (тільки ті що мають ставку)
-  const depoUah = (rates.depozyty?.uah ?? [])
-    .filter(b => b.rate_12m !== null)
-    .sort((a,b) => b.rate_12m - a.rate_12m)
-    .map(b => ({ id:`d_${b.id}`, name:b.name, sub:`UAH · 12 міс.`, rate:b.rate_12m, cur:"uah", tax:0.23, risk:"low", gtee:"ФГВФО" }));
-  const depoEur = (rates.depozyty?.eur ?? [])
-    .filter(b => b.rate_12m !== null)
-    .sort((a,b) => b.rate_12m - a.rate_12m)
-    .map(b => ({ id:`d_${b.id}_eur`, name:`${b.name} EUR`, sub:`EUR · 12 міс.`, rate:b.rate_12m, cur:"eur", tax:0.23, risk:"low", gtee:"ФГВФО" }));
-
-  // ОВДП — тільки 12 місяців
-  const ovdpUah = (rates.ovdp?.uah ?? [])
-    .filter(r => r.months === 12)
-    .map(r => ({ id:`o_uah_12`, name:"ОВДП UAH", sub:"12 міс. · Держава", rate:r.rate, cur:"uah", tax:rates.ovdp.tax ?? 0.015, risk:"low", gtee:"Держава", star:true }));
-  const ovdpEur = (rates.ovdp?.eur ?? [])
-    .filter(r => r.months === 12)
-    .map(r => ({ id:`o_eur_12`, name:"ОВДП EUR", sub:"12 міс. · Держава", rate:r.rate, cur:"eur", tax:rates.ovdp.tax ?? 0.015, risk:"low", gtee:"Держава", star:true }));
-
-  // НПФ з rates.json
-  const npf = (rates.npf?.funds ?? [])
-    .map(f => ({ id:`n_${f.id}`, name:f.name, sub:"UAH · пенсійний фонд", rate:f.rate, cur:"uah", tax:0, risk:"mid", gtee:"Немає", bonus:true }));
-
-  // Нерухомість з rates.json
-  const realty = (rates.realty_ua ?? [])
-    .map(r => ({ id:`r_${r.id}`, name:r.name, sub:"UAH", rate:r.rate, cur:"uah", tax:0.23, risk:"mid", gtee:"Немає" }));
-
-  return [
-    { id:"deposit", name:"Депозити",     icon:"🏦", products:[...depoUah, ...depoEur] },
-    { id:"ovdp",    name:"ОВДП",         icon:"📜", products:[...ovdpUah, ...ovdpEur] },
-    { id:"npf",     name:"НПФ",          icon:"🏛", products:npf },
-    { id:"etf",     name:"ETF",          icon:"📈", products:
-      (rates.etf ?? []).slice(0,5).map(e => ({
-        id:`etf_${e.id}`, name:e.ticker, sub:`${e.name} · EUR`,
-        rate:9.5, cur:"eur", tax:0.23, risk:"mid", gtee:"SIPC"
-      })).concat([
-        {id:"e2",name:"CSPX",sub:"S&P 500 · EUR",    rate:9.5,cur:"eur",tax:0.23,risk:"mid",gtee:"SIPC"},
-        {id:"e1",name:"VWCE",sub:"All World · EUR",   rate:8.5,cur:"eur",tax:0.23,risk:"mid",gtee:"SIPC"},
-        {id:"e3",name:"EUNL",sub:"iShares Core · EUR",rate:8,  cur:"eur",tax:0.23,risk:"mid",gtee:"SIPC"},
-      ]).filter((v,i,a)=>a.findIndex(x=>x.name===v.name)===i).slice(0,7)
-    },
-    { id:"crypto",  name:"Блокчейн",     icon:"⛓", products:[
-      {id:"c3",name:"Bitcoin",     sub:"BTC · волатильний",rate:15,cur:"eur",tax:0.23,risk:"high",gtee:"Немає"},
-      {id:"c1",name:"Binance Earn",sub:"USDT stable",      rate:5, cur:"eur",tax:0.23,risk:"high",gtee:"Немає"},
-      {id:"c2",name:"Aave DeFi",   sub:"USDC stable",      rate:4, cur:"eur",tax:0.23,risk:"high",gtee:"Немає"},
-    ]},
-    { id:"realty",  name:"Нерухомість",  icon:"🏨", products:realty.length ? realty : CATEGORIES_DEFAULT.find(c=>c.id==="realty").products },
-    { id:"gold",    name:"Золото",       icon:"🥇", products:[
-      {id:"g1",name:"Gold ETF IGLN",sub:"EUR · LSE",rate:7,cur:"eur",tax:0.23,risk:"low",gtee:"Немає"},
-    ]},
-  ];
-}
-
-const RISK = {
-  low:  {label:"Низький",  bg:"#E1F5EE",c:"#0F6E56"},
-  mid:  {label:"Середній", bg:"#FFF8EC",c:"#D4891E"},
-  high: {label:"Високий",  bg:"#FAECE7",c:"#C0392B"},
-};
-
-// ─── Build categories from live data (rates.json + Yahoo Finance + CoinGecko) ──
-function buildCategoriesLive(rates, etfReturns, cryptoReturns) {
-  // Deposits
-  const depoUah = (rates.depozyty?.uah ?? [])
-    .filter(b => b.rate_12m !== null)
-    .sort((a,b) => b.rate_12m - a.rate_12m)
-    .map(b => ({ id:`d_${b.id}`, name:b.name, sub:`UAH · 12 міс.`, rate:b.rate_12m, cur:"uah", tax:0.23, risk:"low", gtee:"ФГВФО" }));
-  const depoEur = (rates.depozyty?.eur ?? [])
-    .filter(b => b.rate_12m !== null)
-    .sort((a,b) => b.rate_12m - a.rate_12m)
-    .map(b => ({ id:`d_${b.id}_eur`, name:`${b.name} EUR`, sub:`EUR · 12 міс.`, rate:b.rate_12m, cur:"eur", tax:0.23, risk:"low", gtee:"ФГВФО" }));
-
-  // OVDP — 12 months only, 0% tax
-  const ovdpTax = rates.ovdp?.tax ?? 0;
-  const ovdpUah = (rates.ovdp?.uah ?? []).filter(r => r.months === 12)
-    .map(r => ({ id:`o_uah_12`, name:"ОВДП UAH", sub:"12 міс. · Держава", rate:r.rate, cur:"uah", tax:ovdpTax, risk:"low", gtee:"Держава", star:true }));
-  const ovdpEur = (rates.ovdp?.eur ?? []).filter(r => r.months === 12)
-    .map(r => ({ id:`o_eur_12`, name:"ОВДП EUR", sub:"12 міс. · Держава", rate:r.rate, cur:"eur", tax:ovdpTax, risk:"low", gtee:"Держава", star:true }));
-
-  // NPF
-  const npf = (rates.npf?.funds ?? [])
-    .map(f => ({ id:`n_${f.id}`, name:f.name, sub:"UAH · пенсійний фонд", rate:f.rate, cur:"uah", tax:0, risk:"mid", gtee:"Немає", bonus:true }));
-
-  // ETF — live 12-month returns from Yahoo Finance
-  const etfProducts = (rates.etf ?? []).map(e => {
-    const live = etfReturns[e.id];
-    const rate = live?.ok ? live.returnPct : null;
-    if (rate === null) return null;
-    return {
-      id:`etf_${e.id}`, name:e.ticker, sub:`${e.name} · EUR · LSE`,
-      rate, cur:"eur", tax:0.23,
-      risk: Math.abs(rate) >= 15 ? "high" : Math.abs(rate) >= 8 ? "mid" : "low",
-      gtee:"SIPC",
-    };
-  }).filter(Boolean).sort((a,b) => b.rate - a.rate);
-
-  // Commodities (metals + energy) — live from Yahoo Finance
-  const commProducts = (rates.commodities ?? []).map(c => {
-    const live = etfReturns[c.id];
-    const rate = live?.ok ? live.returnPct : null;
-    if (rate === null) return null;
-    const icon = c.sector === "metals" ? "🥇" : "🛢";
-    return {
-      id:`com_${c.id}`, name:`${icon} ${c.ticker}`, sub:c.sub ?? `${c.name} · EUR · LSE`,
-      rate, cur:"eur", tax:0.23,
-      risk: c.risk ?? "mid",
-      gtee:"IBKR",
-    };
-  }).filter(Boolean).sort((a,b) => b.rate - a.rate);
-
-  // Crypto — live 12-month returns from CoinGecko
-  const cryptoCoins = Object.values(cryptoReturns)
-    .filter(c => c.ok)
-    .sort((a,b) => b.returnPct - a.returnPct)
-    .map(c => ({
-      id:`crypto_${c.sym}`, name:c.name, sub:`${c.sym} · волатильний`,
-      rate:c.returnPct, cur:"eur", tax:0.23, risk:"high", gtee:"Немає",
-    }));
-
-  // Staking (fixed rates)
-  const staking = [
-    { id:"stk_sol",  name:"SOL Staking",         sub:"Solana · Phantom",      rate:7,  cur:"eur", tax:0.23, risk:"high", gtee:"Немає" },
-    { id:"stk_eth",  name:"ETH Staking",          sub:"Ethereum · Lido",       rate:4,  cur:"eur", tax:0.23, risk:"high", gtee:"Немає" },
-    { id:"stk_usdt", name:"USDT Binance Earn",    sub:"Stablecoin · Binance",  rate:5,  cur:"eur", tax:0.23, risk:"mid",  gtee:"Немає" },
-    { id:"stk_usdc", name:"USDC Coinbase Earn",   sub:"Stablecoin · Coinbase", rate:4.5,cur:"eur", tax:0.23, risk:"mid",  gtee:"Немає" },
-  ];
-
-  // Realty from rates.json
-  const realty = (rates.realty_ua ?? [])
-    .map(r => ({ id:`r_${r.id}`, name:r.name, sub:`UAH · готель під управлінням`, rate:r.rate, cur:"uah", tax:0.23, risk:"mid", gtee:"Немає" }));
-
-  return [
-    { id:"deposit", name:"Депозити",    icon:"🏦", products:[...depoUah, ...depoEur] },
-    { id:"ovdp",    name:"ОВДП",        icon:"📜", products:[...ovdpUah, ...ovdpEur] },
-    { id:"npf",     name:"НПФ",         icon:"🏛", products:npf },
-    { id:"etf",     name:"ETF",         icon:"📈", products:etfProducts.length ? etfProducts : [
-      {id:"e_cspx",name:"CSPX",sub:"S&P 500 · EUR",rate:9.5,cur:"eur",tax:0.23,risk:"mid",gtee:"SIPC"},
-    ]},
-    { id:"crypto",  name:"Блокчейн",    icon:"⛓", products:[...cryptoCoins, ...staking].slice(0,10) },
-    { id:"realty",  name:"Нерухомість", icon:"🏨", products:realty.length ? realty : [
-      {id:"r_def",name:"Ribas Invest",sub:"UAH",rate:12,cur:"uah",tax:0.23,risk:"mid",gtee:"Немає"},
-    ]},
-    { id:"gold",    name:"Метали",      icon:"🥇", products:commProducts.length ? commProducts : [
-      {id:"g_igln",name:"IGLN Gold ETF",sub:"EUR · LSE",rate:7,cur:"eur",tax:0.23,risk:"low",gtee:"Немає"},
-    ]},
-  ];
-}
 
 // ─── Math helpers ─────────────────────────────────────────────────────────────
 function calcFV(lump, monthly, rateAnn, years) {
@@ -208,7 +44,6 @@ const sym = (cur) => cur === "uah" ? "₴" : "€";
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function MyCapital() {
-  // Name options: "Мій капітал" | "Назапас" | "Для майбутнього" | "На потім" | "Збираю"
   const TITLE = "Мій капітал";
 
   const [tab,          setTab]          = useState("deposit");
@@ -217,7 +52,26 @@ export default function MyCapital() {
   const [payoutMonths, setPayoutMonths] = useState(60);
   const [eurUah,       setEurUah]       = useState(42);
   const [curFilter,    setCurFilter]    = useState({});
-  const [CATEGORIES,   setCategories]   = useState(CATEGORIES_DEFAULT);
+  const [rates,        setRates]        = useState(null);
+  const [etfReturns,   setEtfReturns]   = useState({});
+  const [cryptoReturns,setCryptoReturns]= useState({});
+
+  const portfolioHydrated = useRef(false);
+
+  // Завантажуємо портфель, збережений з /depozyty, /ovdp, /npf, /etf, /alternatyvni
+  // (і з попередніх візитів сюди) — раніше цей крок був відсутній, тому кнопки
+  // "+ Капітал" на сторінках інструментів нічого сюди не додавали.
+  useEffect(() => {
+    setPortfolio(readPortfolio());
+    portfolioHydrated.current = true;
+  }, []);
+
+  // І навпаки — все, що змінюється тут (додавання/видалення/суми), одразу
+  // зберігається назад, щоб сторінки інструментів показували актуальний стан.
+  useEffect(() => {
+    if (!portfolioHydrated.current) return;
+    writePortfolio(portfolio);
+  }, [portfolio]);
 
   // Завантажуємо всі живі ставки паралельно
   useEffect(() => {
@@ -225,57 +79,48 @@ export default function MyCapital() {
       try {
         // 1. Base data from rates.json
         const ratesRes = await fetch("/data/rates.json");
-        const rates = await ratesRes.json();
+        const ratesData = await ratesRes.json();
+        setRates(ratesData);
 
         // 2. Live ETF + commodities returns (Yahoo Finance via our API)
-        let etfReturns = {};
         try {
           const etfRes = await fetch("/api/etf-returns");
           const etfData = await etfRes.json();
-          etfReturns = etfData.results ?? {};
+          setEtfReturns(etfData.results ?? {});
         } catch {}
 
-        // 3. Live crypto 12-month returns (CoinGecko)
-        const COIN_IDS = [
-          { id:"bitcoin",     sym:"BTC", name:"Bitcoin",    color:"#F7931A" },
-          { id:"ethereum",    sym:"ETH", name:"Ethereum",   color:"#627EEA" },
-          { id:"solana",      sym:"SOL", name:"Solana",     color:"#9945FF" },
-          { id:"binancecoin", sym:"BNB", name:"BNB",        color:"#F3BA2F" },
-          { id:"avalanche-2", sym:"AVAX",name:"Avalanche",  color:"#E84142" },
-        ];
-        let cryptoReturns = {};
+        // 3. Live crypto 12-month returns (CoinGecko) — той самий набір монет,
+        // що на сторінці /alternatyvni (lib.COINS)
+        const COIN_IDS = ["bitcoin","ethereum","solana","binancecoin","avalanche-2","cardano","polkadot","chainlink"];
+        const results = {};
         try {
-          const ids = COIN_IDS.map(c => c.id).join(",");
-          const cgRes = await fetch(
-            `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true&include_7d_change=true`
-          );
-          const cgData = await cgRes.json();
-          // For 12-month return we use market_chart per coin (parallel)
-          await Promise.all(COIN_IDS.map(async (coin) => {
+          await Promise.all(COIN_IDS.map(async (id) => {
             try {
-              const r = await fetch(
-                `https://api.coingecko.com/api/v3/coins/${coin.id}/market_chart?vs_currency=usd&days=365&interval=daily`
-              );
+              const r = await fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=365&interval=daily`);
               const d = await r.json();
               const prices = d.prices;
               if (prices && prices.length >= 2) {
                 const now = prices[prices.length-1][1];
                 const ago = prices[0][1];
-                cryptoReturns[coin.id] = { sym:coin.sym, name:coin.name, returnPct:+((now-ago)/ago*100).toFixed(1), ok:true };
+                results[id] = { ok:true, returnPct:+((now-ago)/ago*100).toFixed(1) };
               }
             } catch {}
           }));
         } catch {}
-
-        setCategories(buildCategoriesLive(rates, etfReturns, cryptoReturns));
+        setCryptoReturns(results);
       } catch {
-        setCategories(CATEGORIES_DEFAULT);
+        setRates(null);
       }
     }
     loadAllRates();
   }, []);
 
-  const cat       = CATEGORIES.find(c => c.id === tab);
+  const CATEGORIES = useMemo(
+    () => rates ? buildAllCategories(rates, etfReturns, cryptoReturns) : EMPTY_CATEGORIES,
+    [rates, etfReturns, cryptoReturns]
+  );
+
+  const cat       = CATEGORIES.find(c => c.id === tab) ?? CATEGORIES[0];
   const tabFilter = curFilter[tab] || "all";
   const hasUAH    = cat.products.some(p => p.cur === "uah");
   const hasEUR    = cat.products.some(p => p.cur === "eur");
@@ -288,10 +133,11 @@ export default function MyCapital() {
 
   // Portfolio mutations
   function addProduct(prod) {
-    if (portfolio.find(p => p.productId === prod.id)) return;
-    const color = PALETTE[portfolio.length % PALETTE.length];
+    if (portfolio.find(p => p.productId === prod.productId)) return;
+    const PALETTE = ["#0F6E56","#1A8C6E","#3BAD8A","#EF9F27","#D4891E","#3B82C4","#8B5CF6","#EC4899","#14B8A6","#F97316"];
+    const color = prod.color || PALETTE[portfolio.length % PALETTE.length];
     setPortfolio(prev => [...prev, {
-      id:Date.now(), productId:prod.id, name:prod.name, sub:prod.sub,
+      id:Date.now(), productId:prod.productId, name:prod.name, sub:prod.sub,
       rate:prod.rate, cur:prod.cur, tax:prod.tax, risk:prod.risk, gtee:prod.gtee,
       star:!!prod.star, bonus:!!prod.bonus, color,
       lump:0, monthly: prod.cur==="uah" ? 3000 : 100,
@@ -363,7 +209,7 @@ export default function MyCapital() {
       {/* ── Category tabs ───────────────────────────────────────────────── */}
       <div style={{display:"flex",gap:4,flexWrap:"wrap",margin:"14px 0 0",borderBottom:`1px solid #E5E5E5`,paddingBottom:10}}>
         {CATEGORIES.map(c => {
-          const count = portfolio.filter(p=>c.products.find(pr=>pr.id===p.productId)).length;
+          const count = portfolio.filter(p=>c.products.find(pr=>pr.productId===p.productId)).length;
           const on    = c.id===tab;
           return (
             <button key={c.id} onClick={()=>setTab(c.id)} style={{
@@ -389,7 +235,7 @@ export default function MyCapital() {
         {/* Filter bar */}
         <div style={{background:SU,padding:"8px 14px",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:"1px solid #EEEEEE"}}>
           <span style={{fontSize:11,fontWeight:600,color:"#aaa"}}>
-            {filteredProducts.length} інструментів · за дохідністю ↓
+            {rates ? `${filteredProducts.length} інструментів · за дохідністю ↓` : "⏳ Завантажуємо дані..."}
           </span>
           <div style={{display:"flex",gap:4}}>
             {(["all","uah","eur"]).map(cv=>{
@@ -414,9 +260,15 @@ export default function MyCapital() {
 
         {/* Rows */}
         {filteredProducts.map((prod,i)=>{
-          const added=isAdded(prod.id), r=RISK[prod.risk];
+          const added=isAdded(prod.productId);
+          const RISK = {
+            low:  {label:"Низький",  bg:"#E1F5EE",c:"#0F6E56"},
+            mid:  {label:"Середній", bg:"#FFF8EC",c:"#D4891E"},
+            high: {label:"Високий",  bg:"#FAECE7",c:"#C0392B"},
+          };
+          const r=RISK[prod.risk] || RISK.mid;
           return (
-            <div key={prod.id} style={{
+            <div key={prod.productId} style={{
               display:"grid",gridTemplateColumns:"56px 1fr 72px 88px 76px 86px",
               padding:"9px 14px",
               background:added?M:"white",

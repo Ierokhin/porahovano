@@ -3,6 +3,7 @@
 // Дані беруться з /public/data/rates.json — редагуй там
 
 import { useState, useEffect } from "react";
+import { ID, TAX, addToPortfolio, isInPortfolio } from "@/lib/instruments";
 
 const T = {
   green:"#0F6E56", greenLt:"#E1F5EE",
@@ -59,6 +60,17 @@ export default function DepozytyPage() {
       .catch(() => setRates(null));
   }, []);
 
+  // Якщо банк уже доданий у «Мій капітал» раніше (з цієї чи іншої сторінки) —
+  // одразу показуємо "✓ Додано", а не вводимо в оману кнопкою "+ Капітал".
+  useEffect(() => {
+    const banksForCur = rates?.depozyty?.[cur] ?? [];
+    const initial = {};
+    banksForCur.forEach(b => {
+      if (isInPortfolio(ID.deposit(b.id, cur))) initial[b.id] = true;
+    });
+    setAdded(initial);
+  }, [rates, cur]);
+
   const banks    = rates?.depozyty?.[cur] ?? [];
   const withRate = [...banks].filter(b => b.rate_12m !== null).sort((a,b) => b.rate_12m - a.rate_12m);
   const noRate   = [...banks].filter(b => b.rate_12m === null);
@@ -68,20 +80,17 @@ export default function DepozytyPage() {
   const updated  = rates?.updated ?? "";
 
   function handleAdd(bank) {
-    const id = bank.id;
-    if (added[id]) return;
-    try {
-      const prev = JSON.parse(localStorage.getItem("porahovano_portfolio") || "[]");
-      if (!prev.find(e => e.productId === id)) {
-        localStorage.setItem("porahovano_portfolio", JSON.stringify([...prev, {
-          id: Date.now(), productId: id,
-          name: bank.name, sub: `${cur.toUpperCase()} · 12 міс.`,
-          rate: bank.rate_12m, cur, tax: 0.23, risk: "low", gtee: "ФГВФО",
-          color: T.green, lump: 0, monthly: cur === "uah" ? 5000 : 200,
-        }]));
-      }
-    } catch {}
-    setAdded(p => ({ ...p, [id]: true }));
+    if (added[bank.id]) return;
+    addToPortfolio(
+      {
+        productId: ID.deposit(bank.id, cur),
+        name: cur === "eur" ? `${bank.name} EUR` : bank.name,
+        sub: `${cur.toUpperCase()} · 12 міс.`,
+        rate: bank.rate_12m, cur, tax: TAX.deposit, risk: "low", gtee: "ФГВФО",
+      },
+      { monthly: cur === "uah" ? 5000 : 200 }
+    );
+    setAdded(p => ({ ...p, [bank.id]: true }));
     setToast(bank.name);
     setTimeout(() => setToast(null), 4000);
   }

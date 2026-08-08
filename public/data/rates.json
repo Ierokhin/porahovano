@@ -424,7 +424,7 @@
       "risk": "mid"
     },
     {
-      "id": "e1",
+      "id": "en1",
       "ticker": "OILW",
       "yahoo": "OILW.L",
       "name": "WisdomTree Brent Crude Oil",
@@ -433,7 +433,7 @@
       "risk": "high"
     },
     {
-      "id": "e2",
+      "id": "en2",
       "ticker": "XDEW",
       "yahoo": "XDWE.L",
       "name": "Xtrackers MSCI World Energy",
@@ -442,7 +442,7 @@
       "risk": "mid"
     },
     {
-      "id": "e3",
+      "id": "en3",
       "ticker": "INRG",
       "yahoo": "INRG.L",
       "name": "iShares Global Clean Energy",
@@ -451,7 +451,7 @@
       "risk": "high"
     },
     {
-      "id": "e4",
+      "id": "en4",
       "ticker": "CMOD",
       "yahoo": "CMOD.L",
       "name": "iShares Diversified Commodity",

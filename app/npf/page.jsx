@@ -3,6 +3,7 @@
 // Дані з /public/data/rates.json. Порівняння НПФ vs ОВДП (актуальні ставки).
 
 import { useState, useEffect } from "react";
+import { ID, TAX, addToPortfolio, isInPortfolio } from "@/lib/instruments";
 
 const T = {
   green:"#0F6E56", greenLt:"#E1F5EE",
@@ -48,17 +49,22 @@ export default function NpfPage() {
   const topOvdp    = rates?.ovdp?.uah?.[0] ?? null;
   const ovdpTax    = rates?.ovdp?.tax ?? 0.015;
 
+  // Показуємо "✓ Додано" якщо фонд уже в портфелі (додано тут чи в калькуляторі)
+  useEffect(() => {
+    const initial = {};
+    funds.forEach(f => {
+      if (isInPortfolio(ID.npf(f.id))) initial[f.id] = true;
+    });
+    setAdded(initial);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rates]);
+
   function handleAdd(fund) {
     if (added[fund.id]) return;
-    try {
-      const prev = JSON.parse(localStorage.getItem("porahovano_portfolio") || "[]");
-      if (!prev.find(e => e.productId === fund.id)) {
-        localStorage.setItem("porahovano_portfolio", JSON.stringify([...prev, {
-          id: Date.now(), productId: fund.id, name: fund.name, sub:"UAH · пенсійний фонд",
-          rate: fund.rate, cur:"uah", tax:0, risk:"mid", gtee:"Немає", bonus:true, color:T.green, lump:0, monthly:3000,
-        }]));
-      }
-    } catch {}
+    addToPortfolio({
+      productId: ID.npf(fund.id), name: fund.name, sub: "UAH · пенсійний фонд",
+      rate: fund.rate, cur: "uah", tax: TAX.npf, risk: "mid", gtee: "Немає", bonus: true,
+    });
     setAdded(p => ({ ...p, [fund.id]: true }));
     setToast(fund.name);
     setTimeout(() => setToast(null), 4000);

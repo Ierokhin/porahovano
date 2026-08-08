@@ -3,6 +3,7 @@
 // Список ETF з /public/data/rates.json, дохідність — реальна за 12 міс через /api/etf-returns (Yahoo Finance)
 
 import { useState, useEffect } from "react";
+import { ID, TAX, addToPortfolio, isInPortfolio } from "@/lib/instruments";
 
 const T = {
   green:"#0F6E56", greenLt:"#E1F5EE",
@@ -80,17 +81,25 @@ export default function EtfPage() {
     .filter(e => e.rate !== null)
     .sort((a,b) => b.rate - a.rate);
 
+  // Показуємо "✓ Додано" якщо ETF уже в портфелі (додано тут чи в калькуляторі)
+  useEffect(() => {
+    if (!etfList.length) return;
+    const initial = {};
+    etfList.forEach(e => {
+      if (isInPortfolio(ID.etf(e.id))) initial[e.id] = true;
+    });
+    setAdded(initial);
+  }, [etfList]);
+
   function handleAdd(etf) {
     if (added[etf.id]) return;
-    try {
-      const prev = JSON.parse(localStorage.getItem("porahovano_portfolio") || "[]");
-      if (!prev.find(e => e.productId === etf.id)) {
-        localStorage.setItem("porahovano_portfolio", JSON.stringify([...prev, {
-          id: Date.now(), productId: etf.id, name: etf.ticker, sub:`EUR · LSE · ${SECT_LABELS[etf.sector]}`,
-          rate: etf.rate, cur:"eur", tax:0.195, risk: etf.risk, gtee:"SIPC", color:"#3B82C4", lump:0, monthly:100,
-        }]));
-      }
-    } catch {}
+    addToPortfolio(
+      {
+        productId: ID.etf(etf.id), name: etf.ticker, sub: `${etf.name} · EUR · LSE`,
+        rate: etf.rate, cur: "eur", tax: TAX.etf, risk: etf.risk, gtee: "SIPC",
+      },
+      { monthly: 100 }
+    );
     setAdded(p => ({ ...p, [etf.id]: true }));
     setToast(etf.ticker);
     setTimeout(() => setToast(null), 4000);

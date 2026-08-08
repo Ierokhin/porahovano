@@ -3,6 +3,7 @@
 // Дані з /public/data/rates.json
 
 import { useState, useEffect } from "react";
+import { ID, addToPortfolio, isInPortfolio } from "@/lib/instruments";
 
 const T = {
   green:"#0F6E56", greenLt:"#E1F5EE",
@@ -51,6 +52,12 @@ export default function OvdpPage() {
 
   useEffect(() => { fetch("/data/rates.json").then(r=>r.json()).then(setRates).catch(()=>setRates(null)); }, []);
 
+  // Показуємо "✓ Додано" якщо ОВДП уже в портфелі (додано тут чи в калькуляторі)
+  useEffect(() => {
+    const id = ID.ovdp(cur, 12);
+    setAdded(p => ({ ...p, [id]: isInPortfolio(id) }));
+  }, [rates, cur]);
+
   const tax  = rates?.ovdp?.tax ?? 0.015;
   const rows = (rates?.ovdp?.[cur] ?? []).filter(r => r.months === 12);
   const topRate = rows[0]?.rate ?? null;
@@ -71,17 +78,15 @@ export default function OvdpPage() {
   const EX_NET   = EX_GROSS - EX_TAX;
 
   function handleAdd(item) {
-    const id = `ovdp_${cur}_${item.months}`;
+    const id = ID.ovdp(cur, item.months);
     if (added[id]) return;
-    try {
-      const prev = JSON.parse(localStorage.getItem("porahovano_portfolio") || "[]");
-      if (!prev.find(e => e.productId === id)) {
-        localStorage.setItem("porahovano_portfolio", JSON.stringify([...prev, {
-          id: Date.now(), productId: id, name:`ОВДП ${cur.toUpperCase()}`, sub:`${cur.toUpperCase()} · ${item.term}`,
-          rate: item.rate, cur, tax, risk:"low", gtee:"Держава", color:T.green, lump:0, monthly: cur==="uah"?3000:100,
-        }]));
-      }
-    } catch {}
+    addToPortfolio(
+      {
+        productId: id, name: `ОВДП ${cur.toUpperCase()}`, sub: `${cur.toUpperCase()} · ${item.term}`,
+        rate: item.rate, cur, tax, risk: "low", gtee: "Держава", star: true,
+      },
+      { monthly: cur === "uah" ? 3000 : 100 }
+    );
     setAdded(p => ({ ...p, [id]: true }));
     setToast(`ОВДП ${cur.toUpperCase()} · ${item.term}`);
     setTimeout(() => setToast(null), 4000);
